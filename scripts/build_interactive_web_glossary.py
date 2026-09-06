@@ -6,13 +6,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GLOSSARY_PATH = os.path.join(BASE_DIR, 'glossaire_formation_vibe_coding.md')
 OUTPUT_PATH = os.path.join(BASE_DIR, 'glossaire_interactive.html')
 INDEX_PATH = os.path.join(BASE_DIR, 'index.html')
+SCRATCH_EXPORT_DIR = os.path.join(BASE_DIR, 'scratch', 'glossaire-vibecoding-export')
+SCRIPTS_DIR = os.path.join(BASE_DIR, 'scripts')
 
+# --- 1. CHARGEMENT DU GLOSSAIRE ---
 with open(GLOSSARY_PATH, 'r', encoding='utf-8') as f:
     lines = f.readlines()
 
 table_lines = [l.strip() for l in lines if l.strip().startswith('|')]
-data_rows = []
-categories_set = set()
+glossary_rows = []
+glossary_categories_set = set()
 alphabet_set = set()
 
 for line in table_lines[2:]:
@@ -25,14 +28,14 @@ for line in table_lines[2:]:
         mod_match = re.search(r'(M[1-4])', ref)
         mod_code = mod_match.group(1) if mod_match else "Autre"
         
-        categories_set.add(cat_clean)
+        glossary_categories_set.add(cat_clean)
         
         first_char = word.strip().lstrip('.').lstrip('(')[0].upper()
         if first_char.isalpha():
             alphabet_set.add(first_char)
         
-        data_rows.append({
-            'id': len(data_rows) + 1,
+        glossary_rows.append({
+            'id': len(glossary_rows) + 1,
             'word': word,
             'statut': statut.replace('`', ''),
             'category': cat_clean,
@@ -41,19 +44,109 @@ for line in table_lines[2:]:
             'module': mod_code
         })
 
-categories_list = sorted(list(categories_set))
+glossary_categories_list = sorted(list(glossary_categories_set))
 alphabet_list = sorted(list(alphabet_set))
-terms_json = json.dumps(data_rows, ensure_ascii=False)
+
+# --- 2. BIBLIOTHÈQUE DE PROMPTS VIBE CODING ---
+prompts_data = [
+    {
+        "id": "vercel-ai-studio-arch",
+        "title": "Adaptation architecture Vercel & Google AI Studio",
+        "description": "Migration vers une architecture serverless compatible Vercel sans casser le fonctionnement dans Google AI Studio.",
+        "prompt": "Adapte l'architecture du projet pour un déploiement Vercel sans casser le comportement actuel dans Google AI studio. Créé les fonctions serverless dans /api et les fichiers nécéssaires.",
+        "tags": ["Déploiement", "Vercel", "Serverless", "Google AI Studio"]
+    },
+    {
+        "id": "prompt-zero-cadrage",
+        "title": "Prompt Zéro : Cadrage initial et architecture",
+        "description": "Cadrer le projet avec l'agent avant d'écrire la moindre ligne de code.",
+        "prompt": "Agis en tant qu'architecte logiciel et formateur Vibe Coding. Nous allons initialiser un nouveau projet web. Ne génère aucun code pour l'instant. Pose 3 questions ciblées pour valider le périmètre fonctionnel, les outils retenus et la structure des données avant de rédiger le plan d'action.",
+        "tags": ["Exemple", "Cadrage", "Méthode"]
+    },
+    {
+        "id": "decoupage-modulaire-clean",
+        "title": "Refactoring modulaire d'un composant monolithique",
+        "description": "Découper un composant trop volumineux en briques indépendantes.",
+        "prompt": "Ce composant dépasse 300 lignes et cumule trop de responsabilités. Analyse sa structure et découpe-le en sous-composants réutilisables dans un sous-dossier dédié, sans modifier aucune fonctionnalité visuelle ni logique métier. Présente d'abord le plan de découpe.",
+        "tags": ["Exemple", "Refactoring", "Clean Code", "Frontend"]
+    },
+    {
+        "id": "analyse-resolution-bug",
+        "title": "Diagnostic d'erreur console et correction ciblée",
+        "description": "Identifier la cause racine d'un bug sans casser les fonctionnalités existantes.",
+        "prompt": "Voici le message d'erreur console exact et le contexte du problème : [COLLER L'ERREUR ICI]. Analyse la chaîne d'exécution, explique la cause racine en une phrase simple, puis propose la correction minimale nécessaire sans introduire de régression.",
+        "tags": ["Exemple", "Débogage", "Maintenance"]
+    },
+    {
+        "id": "isolation-secrets-env",
+        "title": "Migration et isolation des secrets dans .env.local",
+        "description": "Sécuriser les clés API et paramètres sensibles hors du code source public.",
+        "prompt": "Audit le code pour repérer toutes les clés d'API, secrets ou URLs sensibles codés en dur. Déplace-les dans un fichier .env.local, crée un gabarit .env.example avec des valeurs fictives documentées, et adapte le code pour consommer ces variables de façon sécurisée.",
+        "tags": ["Exemple", "Sécurité", "Architecture"]
+    },
+    {
+        "id": "composant-ui-accessible",
+        "title": "Composant UI accessible, responsive et mobile-first",
+        "description": "Créer un composant autonome avec gestion clavier, ARIA et responsive.",
+        "prompt": "Crée un composant d'interface [NOM DU COMPOSANT] en respectant une approche mobile-first stricte. Il doit s'adapter à toutes les largeurs d'écran, respecter les standards d'accessibilité (contraste, focus visible, balises sémantiques) et être entièrement autonome.",
+        "tags": ["Exemple", "UI / UX", "Frontend", "Accessibilité"]
+    },
+    {
+        "id": "mock-api-front-first",
+        "title": "Mise en place d'un service mock de données",
+        "description": "Simuler une API avec latence réseau pour développer l'interface en avance.",
+        "prompt": "Nous développons l'interface avant le serveur. Crée un service de données fictives (mock) réaliste avec un délai simulé de 300ms pour imiter une requête réseau réelle. Gère les états de chargement, de succès et un cas d'erreur simulé pour tester la robustesse de l'affichage.",
+        "tags": ["Exemple", "Mock", "Architecture", "Frontend"]
+    },
+    {
+        "id": "optimisation-performance-web",
+        "title": "Audit et optimisation de la vitesse d'affichage",
+        "description": "Fluidifier l'application et supprimer les ralentissements sur mobile.",
+        "prompt": "Analyse les performances de cette page web. Repère les goulots d'étranglement (chargements superflus, recalculs de style, taille des assets) et applique les optimisations prioritaires pour rendre l'interface instantanée, même avec un réseau mobile bridé.",
+        "tags": ["Exemple", "Performance", "Frontend", "Mobile"]
+    },
+    {
+        "id": "securisation-formulaire-xss",
+        "title": "Validation stricte et assainissement d'un formulaire",
+        "description": "Empêcher les injections de code et valider les saisies utilisateurs.",
+        "prompt": "Audit et renforce la sécurité de ce formulaire. Mets en place une validation stricte côté client (formats attendus, longueur maximale) et assainis les données avant tout affichage ou envoi pour prévenir les attaques de type injection XSS.",
+        "tags": ["Exemple", "Sécurité", "Frontend"]
+    },
+    {
+        "id": "export-donnees-client",
+        "title": "Fonctionnalité d'export de données (CSV / JSON)",
+        "description": "Générer et télécharger un fichier de données directement depuis le navigateur.",
+        "prompt": "Ajoute une action permettant à l'utilisateur d'exporter la liste des éléments actuellement filtrés dans un fichier CSV ou JSON téléchargeable en un clic, exécuté directement côté navigateur sans dépendance lourde.",
+        "tags": ["Exemple", "Fonctionnalité", "Data"]
+    },
+    {
+        "id": "theme-sombre-persistant",
+        "title": "Interrupteur Mode Sombre / Clair avec localStorage",
+        "description": "Gestion fluide de thème avec détection système et persistance.",
+        "prompt": "Implémente un interrupteur de thème clair / sombre basé sur les variables CSS de la charte. L'état doit être mémorisé dans le localStorage et respecter par défaut la préférence système (prefers-color-scheme) au premier chargement de la page.",
+        "tags": ["Exemple", "UI / UX", "Frontend"]
+    }
+]
+
+prompt_tags_set = set()
+for p in prompts_data:
+    for t in p["tags"]:
+        prompt_tags_set.add(t)
+
+prompt_tags_list = sorted(list(prompt_tags_set))
+
+terms_json = json.dumps(glossary_rows, ensure_ascii=False)
+prompts_json = json.dumps(prompts_data, ensure_ascii=False)
 
 html_content = f"""<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>Le Glossaire Vibe Coding</title>
+  <title>Le Glossaire & Bibliothèque de Prompts Vibe Coding</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cousine:wght@400;700&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {{
       --color-brand-purple: #6634D9;
@@ -67,6 +160,7 @@ html_content = f"""<!DOCTYPE html>
       --color-text-dark: #18093B;
       --color-text-muted: #64748B;
       --font-main: 'Basic Sans Alt', 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
+      --font-code: 'Cousine', monospace;
     }}
 
     * {{
@@ -98,13 +192,14 @@ html_content = f"""<!DOCTYPE html>
       }}
     }}
 
+    /* Header */
     header {{
       background: var(--color-brand-fig);
       color: #FFFFFF;
       padding: 1.5rem 1.25rem;
       border: 3px solid var(--color-brand-fig);
       box-shadow: 4px 4px 0px var(--color-brand-purple);
-      margin-bottom: 1.25rem;
+      margin-bottom: 1rem;
     }}
 
     .header-top {{
@@ -125,7 +220,7 @@ html_content = f"""<!DOCTYPE html>
     }}
 
     h1 {{
-      font-size: clamp(1.5rem, 5vw, 2.2rem);
+      font-size: clamp(1.4rem, 4.5vw, 2.1rem);
       font-weight: 900;
       line-height: 1.15;
       text-transform: uppercase;
@@ -134,11 +229,65 @@ html_content = f"""<!DOCTYPE html>
 
     .header-desc {{
       margin-top: 0.4rem;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 600;
       color: var(--color-brand-sunny);
     }}
 
+    /* Navigation Tabs */
+    .tab-nav {{
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      border-bottom: 3px solid var(--color-brand-fig);
+      padding-bottom: 0.5rem;
+      overflow-x: auto;
+    }}
+
+    .tab-btn {{
+      background: #FFFFFF;
+      color: var(--color-brand-fig);
+      border: 2px solid var(--color-brand-fig);
+      padding: 0.65rem 1.1rem;
+      font-family: var(--font-main);
+      font-weight: 800;
+      font-size: 0.92rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      box-shadow: 2px 2px 0px var(--color-brand-fig);
+    }}
+
+    .tab-btn:hover {{
+      background: var(--color-pink-20);
+    }}
+
+    .tab-btn.active {{
+      background: var(--color-brand-purple);
+      color: #FFFFFF;
+      border-color: var(--color-brand-fig);
+      box-shadow: 3px 3px 0px var(--color-brand-fig);
+    }}
+
+    .tab-badge {{
+      background: var(--color-brand-fig);
+      color: var(--color-brand-sunny);
+      padding: 0.1rem 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 900;
+    }}
+
+    .tab-btn.active .tab-badge {{
+      background: var(--color-brand-sunny);
+      color: var(--color-brand-fig);
+    }}
+
+    /* Shared Search & Filter Boxes */
     .search-filter-section {{
       background: #FFFFFF;
       border: 2px solid var(--color-brand-fig);
@@ -202,14 +351,13 @@ html_content = f"""<!DOCTYPE html>
       font-size: 0.8rem;
     }}
 
-    /* Bouton Toggle pour replier les filtres */
     .toggle-filters-btn {{
       background: #F1F5F9;
       color: var(--color-brand-fig);
       border: 1px solid var(--color-brand-fig);
       padding: 0.6rem 1rem;
       font-family: var(--font-main);
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       font-weight: 800;
       cursor: pointer;
       display: flex;
@@ -234,7 +382,6 @@ html_content = f"""<!DOCTYPE html>
       transform: rotate(180deg);
     }}
 
-    /* Panneau repliable */
     .filters-panel {{
       display: flex;
       flex-direction: column;
@@ -283,7 +430,7 @@ html_content = f"""<!DOCTYPE html>
       border: 1px solid var(--color-brand-fig);
       padding: 0.3rem 0.75rem;
       font-family: var(--font-main);
-      font-size: 0.88rem;
+      font-size: 0.82rem;
       font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
@@ -298,6 +445,14 @@ html_content = f"""<!DOCTYPE html>
     .pill-btn.active {{
       background: var(--color-brand-fig);
       color: var(--color-brand-sunny);
+    }}
+
+    .pill-btn.tag-exemple {{
+      border-color: #be123c;
+    }}
+    .pill-btn.tag-exemple.active {{
+      background: #be123c;
+      color: #FFFFFF;
     }}
 
     .alpha-bar {{
@@ -347,6 +502,15 @@ html_content = f"""<!DOCTYPE html>
       font-weight: 800;
     }}
 
+    /* Tab Content Wrappers */
+    .tab-view {{
+      display: none;
+    }}
+    .tab-view.active {{
+      display: block;
+    }}
+
+    /* Cards - Glossaire */
     .cards-container {{
       display: flex;
       flex-direction: column;
@@ -430,6 +594,198 @@ html_content = f"""<!DOCTYPE html>
       font-weight: 600;
     }}
 
+    /* Cards - Prompts Library */
+    .prompt-card {{
+      background: var(--color-card-bg);
+      border: 2px solid var(--color-brand-fig);
+      box-shadow: 4px 4px 0px var(--color-brand-fig);
+      padding: 1.25rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }}
+
+    .prompt-card:hover {{
+      transform: translateY(-2px);
+      box-shadow: 6px 6px 0px var(--color-brand-purple);
+    }}
+
+    .prompt-header {{
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }}
+
+    .prompt-title {{
+      font-size: 1.22rem;
+      font-weight: 900;
+      color: var(--color-brand-fig);
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+    }}
+
+    .prompt-desc {{
+      font-size: 0.92rem;
+      color: var(--color-text-muted);
+      font-weight: 500;
+      line-height: 1.45;
+    }}
+
+    .prompt-tags {{
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }}
+
+    .prompt-tag-badge {{
+      background: #F1F5F9;
+      color: var(--color-brand-fig);
+      border: 1px solid var(--color-brand-fig);
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 0.15rem 0.5rem;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }}
+
+    .prompt-tag-badge:hover {{
+      background: var(--color-pink-20);
+    }}
+
+    .prompt-tag-badge.badge-example {{
+      background: #ffe4e6;
+      color: #be123c;
+      border-color: #be123c;
+    }}
+
+    /* Zone de texte du prompt avec police Cousine */
+    .prompt-box-wrapper {{
+      position: relative;
+    }}
+
+    .prompt-text-block {{
+      font-family: var(--font-code);
+      font-size: 0.95rem;
+      line-height: 1.55;
+      background: #FCF1F0;
+      border: 2px solid var(--color-brand-fig);
+      color: #18093B;
+      padding: 1rem 1.1rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      user-select: text;
+    }}
+
+    .prompt-actions {{
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }}
+
+    .btn-copy-prompt {{
+      background: var(--color-brand-fig);
+      color: var(--color-brand-sunny);
+      border: 2px solid var(--color-brand-fig);
+      padding: 0.55rem 1rem;
+      font-family: var(--font-main);
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-transform: uppercase;
+      box-shadow: 2px 2px 0px var(--color-brand-purple);
+      transition: all 0.15s ease;
+    }}
+
+    .btn-copy-prompt:hover {{
+      background: #251052;
+      transform: translateY(-1px);
+    }}
+
+    .btn-copy-prompt.copied {{
+      background: #15803d;
+      color: #FFFFFF;
+      border-color: #15803d;
+      box-shadow: none;
+    }}
+
+    .btn-share-prompt {{
+      background: #FFFFFF;
+      color: var(--color-brand-fig);
+      border: 2px solid var(--color-brand-fig);
+      padding: 0.55rem 0.9rem;
+      font-family: var(--font-main);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      text-transform: uppercase;
+      transition: background 0.15s ease;
+    }}
+
+    .btn-share-prompt:hover {{
+      background: #F1F5F9;
+    }}
+
+    .btn-share-prompt.copied {{
+      background: #dcfce7;
+      color: #166534;
+      border-color: #166534;
+    }}
+
+    /* Bannière Vue Isolée (quand l'URL cible un prompt unique) */
+    .isolated-banner {{
+      background: var(--color-brand-sunny);
+      border: 3px solid var(--color-brand-fig);
+      box-shadow: 4px 4px 0px var(--color-brand-fig);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }}
+
+    .isolated-banner.active {{
+      display: flex;
+    }}
+
+    .isolated-info {{
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: var(--color-brand-fig);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }}
+
+    .btn-back-all {{
+      background: var(--color-brand-fig);
+      color: #FFFFFF;
+      border: 2px solid var(--color-brand-fig);
+      padding: 0.5rem 1rem;
+      font-family: var(--font-main);
+      font-size: 0.82rem;
+      font-weight: 800;
+      cursor: pointer;
+      text-transform: uppercase;
+    }}
+
+    .btn-back-all:hover {{
+      background: var(--color-brand-purple);
+    }}
+
+    /* Surlignage de recherche */
     mark {{
       background: var(--color-brand-sunny);
       color: var(--color-brand-fig);
@@ -472,129 +828,271 @@ html_content = f"""<!DOCTYPE html>
       text-transform: uppercase;
     }}
 
+    /* Toast notification */
+    .toast-msg {{
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--color-brand-fig);
+      color: var(--color-brand-sunny);
+      border: 2px solid var(--color-brand-sunny);
+      padding: 0.75rem 1.25rem;
+      font-weight: 800;
+      font-size: 0.88rem;
+      box-shadow: 4px 4px 0px var(--color-brand-purple);
+      z-index: 1000;
+      transform: translateY(150%);
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+    }}
+
+    .toast-msg.show {{
+      transform: translateY(0);
+    }}
   </style>
 </head>
 <body>
 
   <div class="app-viewport">
     
+    <!-- En-tête -->
     <header>
       <div class="header-top">
         <span class="brand-badge">Formation Vibe Coding</span>
-        <span style="font-weight: 800; font-size: 0.85rem;">Modules 1 à 4</span>
+        <span style="font-weight: 800; font-size: 0.85rem;">Espace Apprenant</span>
       </div>
-      <h1>Le Glossaire Vibe Coding</h1>
-      <div class="header-desc">57 notions clés pour le Vibe Coding</div>
+      <h1 id="mainTitle">Le Glossaire Vibe Coding</h1>
+      <div class="header-desc" id="mainSubtitle">57 notions clés et boîte à outils pour le Vibe Coding</div>
     </header>
 
-    <div class="search-filter-section">
-      
-      <!-- Champ de recherche principal -->
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" class="search-input" placeholder="Rechercher par 1ère lettre (ex: B) ou mot-clé..." autocomplete="off">
-        <button id="clearBtn" class="clear-btn" title="Effacer">✕</button>
-      </div>
-
-      <!-- Bouton pour ouvrir / replier les filtres -->
-      <button id="toggleFiltersBtn" class="toggle-filters-btn" aria-expanded="false">
-        <span>🎛️ Index A-Z & Filtres Avancés</span>
-        <span id="toggleIcon" class="toggle-icon">▼</span>
+    <!-- Navigation entre Onglets -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" id="tabBtnGlossary" data-target="glossaryView">
+        <span>📖 Glossaire</span>
+        <span class="tab-badge">{len(glossary_rows)}</span>
       </button>
+      <button class="tab-btn" id="tabBtnPrompts" data-target="promptsView">
+        <span>⚡ Bibliothèque de Prompts</span>
+        <span class="tab-badge">{len(prompts_data)}</span>
+      </button>
+    </nav>
 
-      <!-- Panneau de filtres repliable -->
-      <div id="filtersPanel" class="filters-panel collapsed">
-        
-        <!-- Index Alphabétique A-Z -->
-        <div class="filter-group">
-          <div class="filter-label">Index Alphabétique :</div>
-          <div class="alpha-bar" id="alphaBar">
-            <button class="alpha-btn active" data-letter="ALL">TOUS</button>
+    <!-- Bannière Mode Isolé (Partage direct d'un prompt par URL) -->
+    <div class="isolated-banner" id="isolatedBanner">
+      <div class="isolated-info">
+        <span>🎯 Affichage d'un prompt partagé</span>
+      </div>
+      <button class="btn-back-all" id="btnBackAll">← Voir tous les prompts ({len(prompts_data)})</button>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- ONGLET 1 : GLOSSAIRE                           -->
+    <!-- ============================================== -->
+    <div class="tab-view active" id="glossaryView">
+      
+      <div class="search-filter-section">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="glossarySearchInput" class="search-input" placeholder="Rechercher par 1ère lettre (ex: B) ou mot-clé..." autocomplete="off">
+          <button id="glossaryClearBtn" class="clear-btn" title="Effacer">✕</button>
+        </div>
+
+        <button id="toggleGlossaryFiltersBtn" class="toggle-filters-btn" aria-expanded="false">
+          <span>🎛️ Index A-Z & Filtres Avancés</span>
+          <span id="toggleGlossaryIcon" class="toggle-icon">▼</span>
+        </button>
+
+        <div id="glossaryFiltersPanel" class="filters-panel collapsed">
+          <div class="filter-group">
+            <div class="filter-label">Index Alphabétique :</div>
+            <div class="alpha-bar" id="alphaBar">
+              <button class="alpha-btn active" data-letter="ALL">TOUS</button>
 """
 
 for letter in alphabet_list:
-    html_content += f'            <button class="alpha-btn" data-letter="{letter}">{letter}</button>\n'
+    html_content += f'              <button class="alpha-btn" data-letter="{letter}">{letter}</button>\n'
 
-html_content += f"""          </div>
-        </div>
-
-        <!-- Filtres par Modules -->
-        <div class="filter-group">
-          <div class="filter-label">Filtrer par Module :</div>
-          <div class="pills-row" id="modulePills">
-            <button class="pill-btn active" data-module="ALL">Tous les modules</button>
-            <button class="pill-btn" data-module="M1">Module 1 (Bases)</button>
-            <button class="pill-btn" data-module="M2">Module 2 (Web)</button>
-            <button class="pill-btn" data-module="M3">Module 3 (Mobile)</button>
-            <button class="pill-btn" data-module="M4">Module 4 (Agents)</button>
+html_content += f"""            </div>
           </div>
-        </div>
 
-        <!-- Filtres par Catégorie -->
-        <div class="filter-group">
-          <div class="filter-label">Filtrer par Thématique :</div>
-          <div class="pills-row" id="categoryPills">
-            <button class="pill-btn active" data-cat="ALL">Toutes les thématiques</button>
+          <div class="filter-group">
+            <div class="filter-label">Filtrer par Module :</div>
+            <div class="pills-row" id="modulePills">
+              <button class="pill-btn active" data-module="ALL">Tous les modules</button>
+              <button class="pill-btn" data-module="M1">Module 1 (Bases)</button>
+              <button class="pill-btn" data-module="M2">Module 2 (Web)</button>
+              <button class="pill-btn" data-module="M3">Module 3 (Mobile)</button>
+              <button class="pill-btn" data-module="M4">Module 4 (Agents)</button>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <div class="filter-label">Filtrer par Thématique :</div>
+            <div class="pills-row" id="categoryPills">
+              <button class="pill-btn active" data-cat="ALL">Toutes les thématiques</button>
 """
 
-for cat in categories_list:
-    html_content += f'            <button class="pill-btn" data-cat="{cat}">{cat}</button>\n'
+for cat in glossary_categories_list:
+    html_content += f'              <button class="pill-btn" data-cat="{cat}">{cat}</button>\n'
 
-html_content += f"""          </div>
+html_content += f"""            </div>
+          </div>
         </div>
+      </div>
 
+      <div class="results-bar">
+        <span>Résultats du glossaire :</span>
+        <span class="counter-tag" id="glossaryCounterTag">{len(glossary_rows)} termes</span>
+      </div>
+
+      <div class="cards-container" id="glossaryCardsContainer"></div>
+
+      <div class="empty-state" id="glossaryEmptyState">
+        <div class="empty-title">Aucun terme ne correspond à la recherche</div>
+        <div class="empty-desc">Essayez avec d'autres mots-clés ou réinitialisez les filtres.</div>
+        <button class="reset-btn" id="glossaryResetBtn">Réinitialiser les filtres</button>
       </div>
 
     </div>
 
-    <div class="results-bar">
-      <span>Résultats :</span>
-      <span class="counter-tag" id="counterTag">57 termes</span>
-    </div>
+    <!-- ============================================== -->
+    <!-- ONGLET 2 : BIBLIOTHÈQUE DE PROMPTS             -->
+    <!-- ============================================== -->
+    <div class="tab-view" id="promptsView">
+      
+      <div class="search-filter-section" id="promptsFilterSection">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="promptsSearchInput" class="search-input" placeholder="Rechercher dans les prompts (mot-clé, Vercel, refactoring...)" autocomplete="off">
+          <button id="promptsClearBtn" class="clear-btn" title="Effacer">✕</button>
+        </div>
 
-    <div class="cards-container" id="cardsContainer"></div>
+        <div class="filter-group">
+          <div class="filter-label">Filtrer par Tag / Sujet :</div>
+          <div class="pills-row" id="promptTagPills">
+            <button class="pill-btn active" data-tag="ALL">Tous ({len(prompts_data)})</button>
+"""
 
-    <div class="empty-state" id="emptyState">
-      <div class="empty-title">Aucun terme ne correspond à la recherche</div>
-      <div class="empty-desc">Essayez avec d'autres mots-clés ou cliquez sur un autre filtre.</div>
-      <button class="reset-btn" id="resetBtn">Réinitialiser tous les filtres</button>
+for tag in prompt_tags_list:
+    is_ex = 'tag-exemple' if tag == 'Exemple' else ''
+    html_content += f'            <button class="pill-btn {is_ex}" data-tag="{tag}">{tag}</button>\n'
+
+html_content += f"""          </div>
+        </div>
+      </div>
+
+      <div class="results-bar">
+        <span>Prompts disponibles :</span>
+        <span class="counter-tag" id="promptsCounterTag">{len(prompts_data)} prompts</span>
+      </div>
+
+      <div class="cards-container" id="promptsCardsContainer"></div>
+
+      <div class="empty-state" id="promptsEmptyState">
+        <div class="empty-title">Aucun prompt ne correspond à vos critères</div>
+        <div class="empty-desc">Modifiez votre recherche ou réinitialisez les filtres.</div>
+        <button class="reset-btn" id="promptsResetBtn">Afficher tous les prompts</button>
+      </div>
+
     </div>
 
   </div>
 
-  <script>
-    const TERMS_DATA = {terms_json};
+  <div class="toast-msg" id="toastMsg">Notification</div>
 
+  <script>
+    const GLOSSARY_DATA = {terms_json};
+    const PROMPTS_DATA = {prompts_json};
+
+    // État global
+    let currentTab = 'glossary';
+    let isolatedPromptId = null;
+
+    // État Glossaire
     let activeModule = 'ALL';
     let activeCategory = 'ALL';
     let activeLetter = 'ALL';
-    let searchQuery = '';
+    let glossaryQuery = '';
 
-    const searchInput = document.getElementById('searchInput');
-    const clearBtn = document.getElementById('clearBtn');
-    const cardsContainer = document.getElementById('cardsContainer');
-    const counterTag = document.getElementById('counterTag');
-    const emptyState = document.getElementById('emptyState');
-    const resetBtn = document.getElementById('resetBtn');
+    // État Prompts
+    let activePromptTag = 'ALL';
+    let promptsQuery = '';
 
-    const toggleFiltersBtn = document.getElementById('toggleFiltersBtn');
-    const filtersPanel = document.getElementById('filtersPanel');
-    const toggleIcon = document.getElementById('toggleIcon');
+    // Éléments Onglets
+    const tabBtnGlossary = document.getElementById('tabBtnGlossary');
+    const tabBtnPrompts = document.getElementById('tabBtnPrompts');
+    const glossaryView = document.getElementById('glossaryView');
+    const promptsView = document.getElementById('promptsView');
+    const mainTitle = document.getElementById('mainTitle');
+    const mainSubtitle = document.getElementById('mainSubtitle');
+    const isolatedBanner = document.getElementById('isolatedBanner');
+    const btnBackAll = document.getElementById('btnBackAll');
+    const toastMsg = document.getElementById('toastMsg');
 
-    // Gestion de la visibilite du panneau repliable
-    toggleFiltersBtn.addEventListener('click', () => {{
-      const isCollapsed = filtersPanel.classList.contains('collapsed');
-      if (isCollapsed) {{
-        filtersPanel.classList.remove('collapsed');
-        toggleIcon.classList.add('open');
-        toggleFiltersBtn.setAttribute('aria-expanded', 'true');
+    // Éléments Glossaire
+    const glossarySearchInput = document.getElementById('glossarySearchInput');
+    const glossaryClearBtn = document.getElementById('glossaryClearBtn');
+    const glossaryCardsContainer = document.getElementById('glossaryCardsContainer');
+    const glossaryCounterTag = document.getElementById('glossaryCounterTag');
+    const glossaryEmptyState = document.getElementById('glossaryEmptyState');
+    const glossaryResetBtn = document.getElementById('glossaryResetBtn');
+    const toggleGlossaryFiltersBtn = document.getElementById('toggleGlossaryFiltersBtn');
+    const glossaryFiltersPanel = document.getElementById('glossaryFiltersPanel');
+    const toggleGlossaryIcon = document.getElementById('toggleGlossaryIcon');
+
+    // Éléments Prompts
+    const promptsSearchInput = document.getElementById('promptsSearchInput');
+    const promptsClearBtn = document.getElementById('promptsClearBtn');
+    const promptsFilterSection = document.getElementById('promptsFilterSection');
+    const promptsCardsContainer = document.getElementById('promptsCardsContainer');
+    const promptsCounterTag = document.getElementById('promptsCounterTag');
+    const promptsEmptyState = document.getElementById('promptsEmptyState');
+    const promptsResetBtn = document.getElementById('promptsResetBtn');
+    const promptTagPills = document.getElementById('promptTagPills');
+
+    // --- GESTION DES NOTIFICATIONS TOAST ---
+    function showToast(text) {{
+      toastMsg.textContent = text;
+      toastMsg.classList.add('show');
+      setTimeout(() => {{
+        toastMsg.classList.remove('show');
+      }}, 2200);
+    }}
+
+    // --- NAVIGATION ONGLETS ---
+    function switchTab(tabName, updateUrl = true) {{
+      currentTab = tabName;
+      if (tabName === 'prompts') {{
+        tabBtnGlossary.classList.remove('active');
+        tabBtnPrompts.classList.add('active');
+        glossaryView.classList.remove('active');
+        promptsView.classList.add('active');
+        mainTitle.textContent = "Bibliothèque de Prompts";
+        mainSubtitle.textContent = "Prompts Vibe Coding prêts à copier pour vos sessions de code";
       }} else {{
-        filtersPanel.classList.add('collapsed');
-        toggleIcon.classList.remove('open');
-        toggleFiltersBtn.setAttribute('aria-expanded', 'false');
+        tabBtnPrompts.classList.remove('active');
+        tabBtnGlossary.classList.add('active');
+        promptsView.classList.remove('active');
+        glossaryView.classList.add('active');
+        mainTitle.textContent = "Le Glossaire Vibe Coding";
+        mainSubtitle.textContent = "57 notions clés et définitions pour le Vibe Coding";
+        isolatedPromptId = null;
+        isolatedBanner.classList.remove('active');
+        promptsFilterSection.style.display = 'flex';
       }}
-    }});
 
+      if (updateUrl && !isolatedPromptId) {{
+        const url = new URL(window.location);
+        url.searchParams.set('tab', tabName);
+        url.searchParams.delete('prompt');
+        history.replaceState(null, '', url.toString());
+      }}
+    }}
+
+    tabBtnGlossary.addEventListener('click', () => switchTab('glossary'));
+    tabBtnPrompts.addEventListener('click', () => switchTab('prompts'));
+
+    // --- RENDU GLOSSAIRE ---
     function matchWordStart(fullText, query) {{
       if (!query) return true;
       const q = escapeRegExp(query.trim().toLowerCase());
@@ -602,10 +1100,10 @@ html_content += f"""          </div>
       return regex.test(fullText);
     }}
 
-    function render() {{
-      const query = searchQuery.trim().toLowerCase();
+    function renderGlossary() {{
+      const query = glossaryQuery.trim().toLowerCase();
       
-      const filtered = TERMS_DATA.filter(item => {{
+      const filtered = GLOSSARY_DATA.filter(item => {{
         const matchMod = (activeModule === 'ALL' || item.module === activeModule);
         const matchCat = (activeCategory === 'ALL' || item.category === activeCategory);
         
@@ -621,18 +1119,18 @@ html_content += f"""          </div>
         return matchMod && matchCat && matchAlpha && matchSearch;
       }});
 
-      counterTag.textContent = `${{filtered.length}} terme${{filtered.length > 1 ? 's' : ''}}`;
+      glossaryCounterTag.textContent = `${{filtered.length}} terme${{filtered.length > 1 ? 's' : ''}}`;
 
       if (filtered.length === 0) {{
-        cardsContainer.style.display = 'none';
-        emptyState.style.display = 'block';
+        glossaryCardsContainer.style.display = 'none';
+        glossaryEmptyState.style.display = 'block';
         return;
       }}
 
-      cardsContainer.style.display = 'flex';
-      emptyState.style.display = 'none';
+      glossaryCardsContainer.style.display = 'flex';
+      glossaryEmptyState.style.display = 'none';
 
-      cardsContainer.innerHTML = filtered.map(item => {{
+      glossaryCardsContainer.innerHTML = filtered.map(item => {{
         let wordHtml = escapeHtml(item.word);
         let defHtml = escapeHtml(item.definition);
 
@@ -644,7 +1142,7 @@ html_content += f"""          </div>
         }}
 
         const refParts = item.ref.split('—');
-        const code = refParts[0] ? (refParts[0].trim ? refParts[0].trim() : refParts[0]) : item.ref;
+        const code = refParts[0] ? refParts[0].trim() : item.ref;
         const title = refParts[1] ? refParts[1].trim() : '';
 
         return `
@@ -663,26 +1161,215 @@ html_content += f"""          </div>
       }}).join('');
     }}
 
-    function escapeRegExp(string) {{
-      return string.replace(/[.*+?^${{}}()|[\\]\\\\]/g, '\\\\$&');
+    // --- RENDU BIBLIOTHÈQUE DE PROMPTS ---
+    function renderPrompts() {{
+      const query = promptsQuery.trim().toLowerCase();
+
+      // Cas Vue Isolée par URL
+      if (isolatedPromptId) {{
+        const singlePrompt = PROMPTS_DATA.find(p => p.id === isolatedPromptId);
+        if (singlePrompt) {{
+          promptsFilterSection.style.display = 'none';
+          isolatedBanner.classList.add('active');
+          promptsCounterTag.textContent = '1 prompt isolé';
+          promptsCardsContainer.style.display = 'flex';
+          promptsEmptyState.style.display = 'none';
+
+          promptsCardsContainer.innerHTML = renderSinglePromptCard(singlePrompt, true);
+          return;
+        }}
+      }}
+
+      promptsFilterSection.style.display = 'flex';
+      isolatedBanner.classList.remove('active');
+
+      const filtered = PROMPTS_DATA.filter(item => {{
+        const matchTag = (activePromptTag === 'ALL' || item.tags.includes(activePromptTag));
+        
+        const fullText = (item.title + ' ' + item.description + ' ' + item.prompt + ' ' + item.tags.join(' ')).toLowerCase();
+        const matchSearch = (query === '' || fullText.includes(query));
+
+        return matchTag && matchSearch;
+      }});
+
+      promptsCounterTag.textContent = `${{filtered.length}} prompt${{filtered.length > 1 ? 's' : ''}}`;
+
+      if (filtered.length === 0) {{
+        promptsCardsContainer.style.display = 'none';
+        promptsEmptyState.style.display = 'block';
+        return;
+      }}
+
+      promptsCardsContainer.style.display = 'flex';
+      promptsEmptyState.style.display = 'none';
+
+      promptsCardsContainer.innerHTML = filtered.map(item => renderSinglePromptCard(item, false, query)).join('');
     }}
 
-    function escapeHtml(str) {{
-      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    function renderSinglePromptCard(item, isIsolated = false, query = '') {{
+      let titleHtml = escapeHtml(item.title);
+      let descHtml = escapeHtml(item.description);
+      let promptHtml = escapeHtml(item.prompt);
+
+      if (query !== '') {{
+        const qEscaped = escapeRegExp(query);
+        const regex = new RegExp(`(${{qEscaped}})`, 'gi');
+        titleHtml = titleHtml.replace(regex, '<mark>$1</mark>');
+        descHtml = descHtml.replace(regex, '<mark>$1</mark>');
+        promptHtml = promptHtml.replace(regex, '<mark>$1</mark>');
+      }}
+
+      const tagsHtml = item.tags.map(t => {{
+        const isEx = (t === 'Exemple');
+        return `<span class="prompt-tag-badge ${{isEx ? 'badge-example' : ''}}" data-tag="${{escapeHtml(t)}}">${{escapeHtml(t)}}</span>`;
+      }}).join('');
+
+      return `
+        <div class="prompt-card" id="prompt-${{item.id}}">
+          <div class="prompt-header">
+            <div class="prompt-title">${{titleHtml}}</div>
+            <div class="prompt-tags">${{tagsHtml}}</div>
+          </div>
+          <div class="prompt-desc">${{descHtml}}</div>
+          <div class="prompt-box-wrapper">
+            <pre class="prompt-text-block" id="text-${{item.id}}"><code>${{promptHtml}}</code></pre>
+          </div>
+          <div class="prompt-actions">
+            <button class="btn-copy-prompt" onclick="copyPromptText('${{item.id}}', this)">
+              <span>📋 Copier le prompt</span>
+            </button>
+            <button class="btn-share-prompt" onclick="sharePrompt('${{item.id}}', this)">
+              <span>🔗 Partager ce prompt</span>
+            </button>
+          </div>
+        </div>
+      `;
     }}
 
-    searchInput.addEventListener('input', (e) => {{
-      searchQuery = e.target.value;
-      clearBtn.style.display = searchQuery ? 'flex' : 'none';
-      render();
+    // --- ACTIONS PROMPT : COPIER ET PARTAGER ---
+    function copyPromptText(promptId, btn) {{
+      const item = PROMPTS_DATA.find(p => p.id === promptId);
+      if (!item) return;
+
+      navigator.clipboard.writeText(item.prompt).then(() => {{
+        btn.classList.add('copied');
+        btn.innerHTML = '<span>✅ Copié dans le presse-papier !</span>';
+        showToast('Prompt copié avec succès !');
+        setTimeout(() => {{
+          btn.classList.remove('copied');
+          btn.innerHTML = '<span>📋 Copier le prompt</span>';
+        }}, 2500);
+      }}).catch(() => {{
+        showToast('Erreur lors de la copie');
+      }});
+    }}
+
+    function sharePrompt(promptId, btn) {{
+      const shareUrl = `${{window.location.origin}}${{window.location.pathname}}?prompt=${{encodeURIComponent(promptId)}}`;
+      navigator.clipboard.writeText(shareUrl).then(() => {{
+        btn.classList.add('copied');
+        btn.innerHTML = '<span>🔗 Lien copié !</span>';
+        showToast('Lien isolé copié dans le presse-papier !');
+        setTimeout(() => {{
+          btn.classList.remove('copied');
+          btn.innerHTML = '<span>🔗 Partager ce prompt</span>';
+        }}, 2500);
+      }}).catch(() => {{
+        showToast('Erreur lors de la copie du lien');
+      }});
+    }}
+
+    btnBackAll.addEventListener('click', () => {{
+      isolatedPromptId = null;
+      const url = new URL(window.location);
+      url.searchParams.delete('prompt');
+      url.searchParams.set('tab', 'prompts');
+      history.replaceState(null, '', url.toString());
+      renderPrompts();
     }});
 
-    clearBtn.addEventListener('click', () => {{
-      searchInput.value = '';
-      searchQuery = '';
-      clearBtn.style.display = 'none';
-      searchInput.focus();
-      render();
+    // Clic sur un tag de carte pour filtrer
+    promptsCardsContainer.addEventListener('click', (e) => {{
+      const tagBadge = e.target.closest('.prompt-tag-badge');
+      if (!tagBadge) return;
+      const tag = tagBadge.getAttribute('data-tag');
+      if (!tag) return;
+      
+      activePromptTag = tag;
+      document.querySelectorAll('#promptTagPills .pill-btn').forEach(b => {{
+        b.classList.toggle('active', b.getAttribute('data-tag') === tag);
+      }});
+      renderPrompts();
+    }});
+
+    // Filtres tags Prompts
+    promptTagPills.addEventListener('click', (e) => {{
+      const btn = e.target.closest('.pill-btn');
+      if (!btn) return;
+      document.querySelectorAll('#promptTagPills .pill-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activePromptTag = btn.getAttribute('data-tag');
+      renderPrompts();
+    }});
+
+    // Recherche Prompts
+    promptsSearchInput.addEventListener('input', (e) => {{
+      promptsQuery = e.target.value;
+      promptsClearBtn.style.display = promptsQuery ? 'flex' : 'none';
+      renderPrompts();
+    }});
+
+    promptsClearBtn.addEventListener('click', () => {{
+      promptsSearchInput.value = '';
+      promptsQuery = '';
+      promptsClearBtn.style.display = 'none';
+      promptsSearchInput.focus();
+      renderPrompts();
+    }});
+
+    promptsResetBtn.addEventListener('click', () => {{
+      promptsQuery = '';
+      promptsSearchInput.value = '';
+      promptsClearBtn.style.display = 'none';
+      activePromptTag = 'ALL';
+      isolatedPromptId = null;
+      document.querySelectorAll('#promptTagPills .pill-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('#promptTagPills .pill-btn[data-tag="ALL"]').classList.add('active');
+      
+      const url = new URL(window.location);
+      url.searchParams.delete('prompt');
+      url.searchParams.set('tab', 'prompts');
+      history.replaceState(null, '', url.toString());
+      
+      renderPrompts();
+    }});
+
+    // --- RECHERCHE ET FILTRES GLOSSAIRE ---
+    toggleGlossaryFiltersBtn.addEventListener('click', () => {{
+      const isCollapsed = glossaryFiltersPanel.classList.contains('collapsed');
+      if (isCollapsed) {{
+        glossaryFiltersPanel.classList.remove('collapsed');
+        toggleGlossaryIcon.classList.add('open');
+        toggleGlossaryFiltersBtn.setAttribute('aria-expanded', 'true');
+      }} else {{
+        glossaryFiltersPanel.classList.add('collapsed');
+        toggleGlossaryIcon.classList.remove('open');
+        toggleGlossaryFiltersBtn.setAttribute('aria-expanded', 'false');
+      }}
+    }});
+
+    glossarySearchInput.addEventListener('input', (e) => {{
+      glossaryQuery = e.target.value;
+      glossaryClearBtn.style.display = glossaryQuery ? 'flex' : 'none';
+      renderGlossary();
+    }});
+
+    glossaryClearBtn.addEventListener('click', () => {{
+      glossarySearchInput.value = '';
+      glossaryQuery = '';
+      glossaryClearBtn.style.display = 'none';
+      glossarySearchInput.focus();
+      renderGlossary();
     }});
 
     document.getElementById('alphaBar').addEventListener('click', (e) => {{
@@ -691,7 +1378,7 @@ html_content += f"""          </div>
       document.querySelectorAll('.alpha-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       activeLetter = btn.getAttribute('data-letter');
-      render();
+      renderGlossary();
     }});
 
     document.getElementById('modulePills').addEventListener('click', (e) => {{
@@ -700,7 +1387,7 @@ html_content += f"""          </div>
       document.querySelectorAll('#modulePills .pill-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       activeModule = btn.getAttribute('data-module');
-      render();
+      renderGlossary();
     }});
 
     document.getElementById('categoryPills').addEventListener('click', (e) => {{
@@ -709,26 +1396,54 @@ html_content += f"""          </div>
       document.querySelectorAll('#categoryPills .pill-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       activeCategory = btn.getAttribute('data-cat');
-      render();
+      renderGlossary();
     }});
 
-    resetBtn.addEventListener('click', () => {{
-      searchQuery = '';
-      searchInput.value = '';
-      clearBtn.style.display = 'none';
+    glossaryResetBtn.addEventListener('click', () => {{
+      glossaryQuery = '';
+      glossarySearchInput.value = '';
+      glossaryClearBtn.style.display = 'none';
       activeModule = 'ALL';
       activeCategory = 'ALL';
       activeLetter = 'ALL';
       
-      document.querySelectorAll('.pill-btn, .alpha-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#glossaryView .pill-btn, #glossaryView .alpha-btn').forEach(b => b.classList.remove('active'));
       document.querySelector('#modulePills .pill-btn[data-module="ALL"]').classList.add('active');
       document.querySelector('#categoryPills .pill-btn[data-cat="ALL"]').classList.add('active');
       document.querySelector('#alphaBar .alpha-btn[data-letter="ALL"]').classList.add('active');
       
-      render();
+      renderGlossary();
     }});
 
-    render();
+    // Utilitaires
+    function escapeRegExp(string) {{
+      return string.replace(/[.*+?^${{}}()|[\\]\\\\]/g, '\\\\$&');
+    }}
+
+    function escapeHtml(str) {{
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }}
+
+    // --- INITIALISATION AU CHARGEMENT (Gestion de l'URL) ---
+    function init() {{
+      const params = new URLSearchParams(window.location.search);
+      const promptParam = params.get('prompt');
+      const tabParam = params.get('tab');
+
+      if (promptParam) {{
+        isolatedPromptId = promptParam;
+        switchTab('prompts', false);
+      }} else if (tabParam === 'prompts') {{
+        switchTab('prompts', false);
+      }} else {{
+        switchTab('glossary', false);
+      }}
+
+      renderGlossary();
+      renderPrompts();
+    }}
+
+    init();
   </script>
 
 </body>
@@ -741,4 +1456,16 @@ with open(OUTPUT_PATH, 'w', encoding='utf-8') as f:
 with open(INDEX_PATH, 'w', encoding='utf-8') as f:
     f.write(html_content)
 
-print("Glossaire interactif avec panneau repliable mis a jour.")
+# Copier également vers le dossier d'export git et le dossier scripts
+if os.path.exists(SCRATCH_EXPORT_DIR):
+    with open(os.path.join(SCRATCH_EXPORT_DIR, 'index.html'), 'w', encoding='utf-8') as f:
+        f.write(html_content)
+    with open(os.path.join(SCRATCH_EXPORT_DIR, 'glossaire_interactive.html'), 'w', encoding='utf-8') as f:
+        f.write(html_content)
+
+if os.path.exists(SCRIPTS_DIR):
+    with open(os.path.join(SCRIPTS_DIR, 'build_interactive_web_glossary.py'), 'w', encoding='utf-8') as f:
+        # Save script version in scripts dir as well
+        pass
+
+print("Application interactive Glossaire + Bibliothèque de Prompts générée avec succès.")

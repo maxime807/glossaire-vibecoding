@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>Le Glossaire Vibe Coding</title>
+  <title>Le Glossaire & Bibliothèque de Prompts Vibe Coding</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cousine:wght@400;700&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --color-brand-purple: #6634D9;
@@ -20,6 +20,7 @@
       --color-text-dark: #18093B;
       --color-text-muted: #64748B;
       --font-main: 'Basic Sans Alt', 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
+      --font-code: 'Cousine', monospace;
     }
 
     * {
@@ -51,13 +52,14 @@
       }
     }
 
+    /* Header */
     header {
       background: var(--color-brand-fig);
       color: #FFFFFF;
       padding: 1.5rem 1.25rem;
       border: 3px solid var(--color-brand-fig);
       box-shadow: 4px 4px 0px var(--color-brand-purple);
-      margin-bottom: 1.25rem;
+      margin-bottom: 1rem;
     }
 
     .header-top {
@@ -78,7 +80,7 @@
     }
 
     h1 {
-      font-size: clamp(1.5rem, 5vw, 2.2rem);
+      font-size: clamp(1.4rem, 4.5vw, 2.1rem);
       font-weight: 900;
       line-height: 1.15;
       text-transform: uppercase;
@@ -87,11 +89,65 @@
 
     .header-desc {
       margin-top: 0.4rem;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 600;
       color: var(--color-brand-sunny);
     }
 
+    /* Navigation Tabs */
+    .tab-nav {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      border-bottom: 3px solid var(--color-brand-fig);
+      padding-bottom: 0.5rem;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: #FFFFFF;
+      color: var(--color-brand-fig);
+      border: 2px solid var(--color-brand-fig);
+      padding: 0.65rem 1.1rem;
+      font-family: var(--font-main);
+      font-weight: 800;
+      font-size: 0.92rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      box-shadow: 2px 2px 0px var(--color-brand-fig);
+    }
+
+    .tab-btn:hover {
+      background: var(--color-pink-20);
+    }
+
+    .tab-btn.active {
+      background: var(--color-brand-purple);
+      color: #FFFFFF;
+      border-color: var(--color-brand-fig);
+      box-shadow: 3px 3px 0px var(--color-brand-fig);
+    }
+
+    .tab-badge {
+      background: var(--color-brand-fig);
+      color: var(--color-brand-sunny);
+      padding: 0.1rem 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 900;
+    }
+
+    .tab-btn.active .tab-badge {
+      background: var(--color-brand-sunny);
+      color: var(--color-brand-fig);
+    }
+
+    /* Shared Search & Filter Boxes */
     .search-filter-section {
       background: #FFFFFF;
       border: 2px solid var(--color-brand-fig);
@@ -155,14 +211,13 @@
       font-size: 0.8rem;
     }
 
-    /* Bouton Toggle pour replier les filtres */
     .toggle-filters-btn {
       background: #F1F5F9;
       color: var(--color-brand-fig);
       border: 1px solid var(--color-brand-fig);
       padding: 0.6rem 1rem;
       font-family: var(--font-main);
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       font-weight: 800;
       cursor: pointer;
       display: flex;
@@ -187,7 +242,6 @@
       transform: rotate(180deg);
     }
 
-    /* Panneau repliable */
     .filters-panel {
       display: flex;
       flex-direction: column;
@@ -236,7 +290,7 @@
       border: 1px solid var(--color-brand-fig);
       padding: 0.3rem 0.75rem;
       font-family: var(--font-main);
-      font-size: 0.88rem;
+      font-size: 0.82rem;
       font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
@@ -251,6 +305,14 @@
     .pill-btn.active {
       background: var(--color-brand-fig);
       color: var(--color-brand-sunny);
+    }
+
+    .pill-btn.tag-exemple {
+      border-color: #be123c;
+    }
+    .pill-btn.tag-exemple.active {
+      background: #be123c;
+      color: #FFFFFF;
     }
 
     .alpha-bar {
@@ -300,6 +362,15 @@
       font-weight: 800;
     }
 
+    /* Tab Content Wrappers */
+    .tab-view {
+      display: none;
+    }
+    .tab-view.active {
+      display: block;
+    }
+
+    /* Cards - Glossaire */
     .cards-container {
       display: flex;
       flex-direction: column;
@@ -383,6 +454,198 @@
       font-weight: 600;
     }
 
+    /* Cards - Prompts Library */
+    .prompt-card {
+      background: var(--color-card-bg);
+      border: 2px solid var(--color-brand-fig);
+      box-shadow: 4px 4px 0px var(--color-brand-fig);
+      padding: 1.25rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .prompt-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 6px 6px 0px var(--color-brand-purple);
+    }
+
+    .prompt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .prompt-title {
+      font-size: 1.22rem;
+      font-weight: 900;
+      color: var(--color-brand-fig);
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+    }
+
+    .prompt-desc {
+      font-size: 0.92rem;
+      color: var(--color-text-muted);
+      font-weight: 500;
+      line-height: 1.45;
+    }
+
+    .prompt-tags {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .prompt-tag-badge {
+      background: #F1F5F9;
+      color: var(--color-brand-fig);
+      border: 1px solid var(--color-brand-fig);
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 0.15rem 0.5rem;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .prompt-tag-badge:hover {
+      background: var(--color-pink-20);
+    }
+
+    .prompt-tag-badge.badge-example {
+      background: #ffe4e6;
+      color: #be123c;
+      border-color: #be123c;
+    }
+
+    /* Zone de texte du prompt avec police Cousine */
+    .prompt-box-wrapper {
+      position: relative;
+    }
+
+    .prompt-text-block {
+      font-family: var(--font-code);
+      font-size: 0.95rem;
+      line-height: 1.55;
+      background: #FCF1F0;
+      border: 2px solid var(--color-brand-fig);
+      color: #18093B;
+      padding: 1rem 1.1rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      user-select: text;
+    }
+
+    .prompt-actions {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn-copy-prompt {
+      background: var(--color-brand-fig);
+      color: var(--color-brand-sunny);
+      border: 2px solid var(--color-brand-fig);
+      padding: 0.55rem 1rem;
+      font-family: var(--font-main);
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-transform: uppercase;
+      box-shadow: 2px 2px 0px var(--color-brand-purple);
+      transition: all 0.15s ease;
+    }
+
+    .btn-copy-prompt:hover {
+      background: #251052;
+      transform: translateY(-1px);
+    }
+
+    .btn-copy-prompt.copied {
+      background: #15803d;
+      color: #FFFFFF;
+      border-color: #15803d;
+      box-shadow: none;
+    }
+
+    .btn-share-prompt {
+      background: #FFFFFF;
+      color: var(--color-brand-fig);
+      border: 2px solid var(--color-brand-fig);
+      padding: 0.55rem 0.9rem;
+      font-family: var(--font-main);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      text-transform: uppercase;
+      transition: background 0.15s ease;
+    }
+
+    .btn-share-prompt:hover {
+      background: #F1F5F9;
+    }
+
+    .btn-share-prompt.copied {
+      background: #dcfce7;
+      color: #166534;
+      border-color: #166534;
+    }
+
+    /* Bannière Vue Isolée (quand l'URL cible un prompt unique) */
+    .isolated-banner {
+      background: var(--color-brand-sunny);
+      border: 3px solid var(--color-brand-fig);
+      box-shadow: 4px 4px 0px var(--color-brand-fig);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .isolated-banner.active {
+      display: flex;
+    }
+
+    .isolated-info {
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: var(--color-brand-fig);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-back-all {
+      background: var(--color-brand-fig);
+      color: #FFFFFF;
+      border: 2px solid var(--color-brand-fig);
+      padding: 0.5rem 1rem;
+      font-family: var(--font-main);
+      font-size: 0.82rem;
+      font-weight: 800;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    .btn-back-all:hover {
+      background: var(--color-brand-purple);
+    }
+
+    /* Surlignage de recherche */
     mark {
       background: var(--color-brand-sunny);
       color: var(--color-brand-fig);
@@ -425,177 +688,334 @@
       text-transform: uppercase;
     }
 
+    /* Toast notification */
+    .toast-msg {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--color-brand-fig);
+      color: var(--color-brand-sunny);
+      border: 2px solid var(--color-brand-sunny);
+      padding: 0.75rem 1.25rem;
+      font-weight: 800;
+      font-size: 0.88rem;
+      box-shadow: 4px 4px 0px var(--color-brand-purple);
+      z-index: 1000;
+      transform: translateY(150%);
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+    }
+
+    .toast-msg.show {
+      transform: translateY(0);
+    }
   </style>
 </head>
 <body>
 
   <div class="app-viewport">
     
+    <!-- En-tête -->
     <header>
       <div class="header-top">
         <span class="brand-badge">Formation Vibe Coding</span>
-        <span style="font-weight: 800; font-size: 0.85rem;">Modules 1 à 4</span>
+        <span style="font-weight: 800; font-size: 0.85rem;">Espace Apprenant</span>
       </div>
-      <h1>Le Glossaire Vibe Coding</h1>
-      <div class="header-desc">57 notions clés pour le Vibe Coding</div>
+      <h1 id="mainTitle">Le Glossaire Vibe Coding</h1>
+      <div class="header-desc" id="mainSubtitle">57 notions clés et boîte à outils pour le Vibe Coding</div>
     </header>
 
-    <div class="search-filter-section">
-      
-      <!-- Champ de recherche principal -->
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" class="search-input" placeholder="Rechercher par 1ère lettre (ex: B) ou mot-clé..." autocomplete="off">
-        <button id="clearBtn" class="clear-btn" title="Effacer">✕</button>
-      </div>
-
-      <!-- Bouton pour ouvrir / replier les filtres -->
-      <button id="toggleFiltersBtn" class="toggle-filters-btn" aria-expanded="false">
-        <span>🎛️ Index A-Z & Filtres Avancés</span>
-        <span id="toggleIcon" class="toggle-icon">▼</span>
+    <!-- Navigation entre Onglets -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" id="tabBtnGlossary" data-target="glossaryView">
+        <span>📖 Glossaire</span>
+        <span class="tab-badge">57</span>
       </button>
+      <button class="tab-btn" id="tabBtnPrompts" data-target="promptsView">
+        <span>⚡ Bibliothèque de Prompts</span>
+        <span class="tab-badge">11</span>
+      </button>
+    </nav>
 
-      <!-- Panneau de filtres repliable -->
-      <div id="filtersPanel" class="filters-panel collapsed">
-        
-        <!-- Index Alphabétique A-Z -->
-        <div class="filter-group">
-          <div class="filter-label">Index Alphabétique :</div>
-          <div class="alpha-bar" id="alphaBar">
-            <button class="alpha-btn active" data-letter="ALL">TOUS</button>
-            <button class="alpha-btn" data-letter="A">A</button>
-            <button class="alpha-btn" data-letter="B">B</button>
-            <button class="alpha-btn" data-letter="C">C</button>
-            <button class="alpha-btn" data-letter="D">D</button>
-            <button class="alpha-btn" data-letter="E">E</button>
-            <button class="alpha-btn" data-letter="F">F</button>
-            <button class="alpha-btn" data-letter="G">G</button>
-            <button class="alpha-btn" data-letter="H">H</button>
-            <button class="alpha-btn" data-letter="I">I</button>
-            <button class="alpha-btn" data-letter="J">J</button>
-            <button class="alpha-btn" data-letter="L">L</button>
-            <button class="alpha-btn" data-letter="M">M</button>
-            <button class="alpha-btn" data-letter="N">N</button>
-            <button class="alpha-btn" data-letter="P">P</button>
-            <button class="alpha-btn" data-letter="R">R</button>
-            <button class="alpha-btn" data-letter="S">S</button>
-            <button class="alpha-btn" data-letter="T">T</button>
-            <button class="alpha-btn" data-letter="V">V</button>
-          </div>
+    <!-- Bannière Mode Isolé (Partage direct d'un prompt par URL) -->
+    <div class="isolated-banner" id="isolatedBanner">
+      <div class="isolated-info">
+        <span>🎯 Affichage d'un prompt partagé</span>
+      </div>
+      <button class="btn-back-all" id="btnBackAll">← Voir tous les prompts (11)</button>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- ONGLET 1 : GLOSSAIRE                           -->
+    <!-- ============================================== -->
+    <div class="tab-view active" id="glossaryView">
+      
+      <div class="search-filter-section">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="glossarySearchInput" class="search-input" placeholder="Rechercher par 1ère lettre (ex: B) ou mot-clé..." autocomplete="off">
+          <button id="glossaryClearBtn" class="clear-btn" title="Effacer">✕</button>
         </div>
 
-        <!-- Filtres par Modules -->
-        <div class="filter-group">
-          <div class="filter-label">Filtrer par Module :</div>
-          <div class="pills-row" id="modulePills">
-            <button class="pill-btn active" data-module="ALL">Tous les modules</button>
-            <button class="pill-btn" data-module="M1">Module 1 (Bases)</button>
-            <button class="pill-btn" data-module="M2">Module 2 (Web)</button>
-            <button class="pill-btn" data-module="M3">Module 3 (Mobile)</button>
-            <button class="pill-btn" data-module="M4">Module 4 (Agents)</button>
+        <button id="toggleGlossaryFiltersBtn" class="toggle-filters-btn" aria-expanded="false">
+          <span>🎛️ Index A-Z & Filtres Avancés</span>
+          <span id="toggleGlossaryIcon" class="toggle-icon">▼</span>
+        </button>
+
+        <div id="glossaryFiltersPanel" class="filters-panel collapsed">
+          <div class="filter-group">
+            <div class="filter-label">Index Alphabétique :</div>
+            <div class="alpha-bar" id="alphaBar">
+              <button class="alpha-btn active" data-letter="ALL">TOUS</button>
+              <button class="alpha-btn" data-letter="A">A</button>
+              <button class="alpha-btn" data-letter="B">B</button>
+              <button class="alpha-btn" data-letter="C">C</button>
+              <button class="alpha-btn" data-letter="D">D</button>
+              <button class="alpha-btn" data-letter="E">E</button>
+              <button class="alpha-btn" data-letter="F">F</button>
+              <button class="alpha-btn" data-letter="G">G</button>
+              <button class="alpha-btn" data-letter="H">H</button>
+              <button class="alpha-btn" data-letter="I">I</button>
+              <button class="alpha-btn" data-letter="J">J</button>
+              <button class="alpha-btn" data-letter="L">L</button>
+              <button class="alpha-btn" data-letter="M">M</button>
+              <button class="alpha-btn" data-letter="N">N</button>
+              <button class="alpha-btn" data-letter="P">P</button>
+              <button class="alpha-btn" data-letter="R">R</button>
+              <button class="alpha-btn" data-letter="S">S</button>
+              <button class="alpha-btn" data-letter="T">T</button>
+              <button class="alpha-btn" data-letter="V">V</button>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <div class="filter-label">Filtrer par Module :</div>
+            <div class="pills-row" id="modulePills">
+              <button class="pill-btn active" data-module="ALL">Tous les modules</button>
+              <button class="pill-btn" data-module="M1">Module 1 (Bases)</button>
+              <button class="pill-btn" data-module="M2">Module 2 (Web)</button>
+              <button class="pill-btn" data-module="M3">Module 3 (Mobile)</button>
+              <button class="pill-btn" data-module="M4">Module 4 (Agents)</button>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <div class="filter-label">Filtrer par Thématique :</div>
+            <div class="pills-row" id="categoryPills">
+              <button class="pill-btn active" data-cat="ALL">Toutes les thématiques</button>
+              <button class="pill-btn" data-cat="Architecture">Architecture</button>
+              <button class="pill-btn" data-cat="Architecture / Web">Architecture / Web</button>
+              <button class="pill-btn" data-cat="Concept / Outil">Concept / Outil</button>
+              <button class="pill-btn" data-cat="Concept Git">Concept Git</button>
+              <button class="pill-btn" data-cat="Concept IA">Concept IA</button>
+              <button class="pill-btn" data-cat="Concept IA / Métrique">Concept IA / Métrique</button>
+              <button class="pill-btn" data-cat="Concept IA / Risque">Concept IA / Risque</button>
+              <button class="pill-btn" data-cat="Concept web">Concept web</button>
+              <button class="pill-btn" data-cat="Concept web / Mobile">Concept web / Mobile</button>
+              <button class="pill-btn" data-cat="Débogage">Débogage</button>
+              <button class="pill-btn" data-cat="Environnement d'exécution">Environnement d'exécution</button>
+              <button class="pill-btn" data-cat="Extension IA">Extension IA</button>
+              <button class="pill-btn" data-cat="Fichier de config Git">Fichier de config Git</button>
+              <button class="pill-btn" data-cat="Fichier de contexte / Méthode">Fichier de contexte / Méthode</button>
+              <button class="pill-btn" data-cat="Format de données">Format de données</button>
+              <button class="pill-btn" data-cat="Framework">Framework</button>
+              <button class="pill-btn" data-cat="Framework / Bibliothèque">Framework / Bibliothèque</button>
+              <button class="pill-btn" data-cat="Framework CSS">Framework CSS</button>
+              <button class="pill-btn" data-cat="Framework backend">Framework backend</button>
+              <button class="pill-btn" data-cat="IDE / Agent SOTA">IDE / Agent SOTA</button>
+              <button class="pill-btn" data-cat="IDE / Outil">IDE / Outil</button>
+              <button class="pill-btn" data-cat="Langage">Langage</button>
+              <button class="pill-btn" data-cat="Mode IDE">Mode IDE</button>
+              <button class="pill-btn" data-cat="Modèle IA">Modèle IA</button>
+              <button class="pill-btn" data-cat="Méthode">Méthode</button>
+              <button class="pill-btn" data-cat="Méthode / Design">Méthode / Design</button>
+              <button class="pill-btn" data-cat="Méthode / Philosophie">Méthode / Philosophie</button>
+              <button class="pill-btn" data-cat="Méthode de code">Méthode de code</button>
+              <button class="pill-btn" data-cat="Méthode prompting">Méthode prompting</button>
+              <button class="pill-btn" data-cat="Outil / Framework">Outil / Framework</button>
+              <button class="pill-btn" data-cat="Outil / Interface">Outil / Interface</button>
+              <button class="pill-btn" data-cat="Outil / Plateforme">Outil / Plateforme</button>
+              <button class="pill-btn" data-cat="Outil / VCS">Outil / VCS</button>
+              <button class="pill-btn" data-cat="Outil IA">Outil IA</button>
+              <button class="pill-btn" data-cat="Plateforme / Cloud">Plateforme / Cloud</button>
+              <button class="pill-btn" data-cat="Protocole web">Protocole web</button>
+              <button class="pill-btn" data-cat="Réseau local">Réseau local</button>
+              <button class="pill-btn" data-cat="Sécurité / Configuration">Sécurité / Configuration</button>
+              <button class="pill-btn" data-cat="Sécurité / IDE">Sécurité / IDE</button>
+              <button class="pill-btn" data-cat="Sécurité web">Sécurité web</button>
+            </div>
           </div>
         </div>
+      </div>
 
-        <!-- Filtres par Catégorie -->
-        <div class="filter-group">
-          <div class="filter-label">Filtrer par Thématique :</div>
-          <div class="pills-row" id="categoryPills">
-            <button class="pill-btn active" data-cat="ALL">Toutes les thématiques</button>
-            <button class="pill-btn" data-cat="Architecture">Architecture</button>
-            <button class="pill-btn" data-cat="Architecture / Web">Architecture / Web</button>
-            <button class="pill-btn" data-cat="Concept / Outil">Concept / Outil</button>
-            <button class="pill-btn" data-cat="Concept Git">Concept Git</button>
-            <button class="pill-btn" data-cat="Concept IA">Concept IA</button>
-            <button class="pill-btn" data-cat="Concept IA / Métrique">Concept IA / Métrique</button>
-            <button class="pill-btn" data-cat="Concept IA / Risque">Concept IA / Risque</button>
-            <button class="pill-btn" data-cat="Concept web">Concept web</button>
-            <button class="pill-btn" data-cat="Concept web / Mobile">Concept web / Mobile</button>
-            <button class="pill-btn" data-cat="Débogage">Débogage</button>
-            <button class="pill-btn" data-cat="Environnement d'exécution">Environnement d'exécution</button>
-            <button class="pill-btn" data-cat="Extension IA">Extension IA</button>
-            <button class="pill-btn" data-cat="Fichier de config Git">Fichier de config Git</button>
-            <button class="pill-btn" data-cat="Fichier de contexte / Méthode">Fichier de contexte / Méthode</button>
-            <button class="pill-btn" data-cat="Format de données">Format de données</button>
-            <button class="pill-btn" data-cat="Framework">Framework</button>
-            <button class="pill-btn" data-cat="Framework / Bibliothèque">Framework / Bibliothèque</button>
-            <button class="pill-btn" data-cat="Framework CSS">Framework CSS</button>
-            <button class="pill-btn" data-cat="Framework backend">Framework backend</button>
-            <button class="pill-btn" data-cat="IDE / Agent SOTA">IDE / Agent SOTA</button>
-            <button class="pill-btn" data-cat="IDE / Outil">IDE / Outil</button>
-            <button class="pill-btn" data-cat="Langage">Langage</button>
-            <button class="pill-btn" data-cat="Mode IDE">Mode IDE</button>
-            <button class="pill-btn" data-cat="Modèle IA">Modèle IA</button>
-            <button class="pill-btn" data-cat="Méthode">Méthode</button>
-            <button class="pill-btn" data-cat="Méthode / Design">Méthode / Design</button>
-            <button class="pill-btn" data-cat="Méthode / Philosophie">Méthode / Philosophie</button>
-            <button class="pill-btn" data-cat="Méthode de code">Méthode de code</button>
-            <button class="pill-btn" data-cat="Méthode prompting">Méthode prompting</button>
-            <button class="pill-btn" data-cat="Outil / Framework">Outil / Framework</button>
-            <button class="pill-btn" data-cat="Outil / Interface">Outil / Interface</button>
-            <button class="pill-btn" data-cat="Outil / Plateforme">Outil / Plateforme</button>
-            <button class="pill-btn" data-cat="Outil / VCS">Outil / VCS</button>
-            <button class="pill-btn" data-cat="Outil IA">Outil IA</button>
-            <button class="pill-btn" data-cat="Plateforme / Cloud">Plateforme / Cloud</button>
-            <button class="pill-btn" data-cat="Protocole web">Protocole web</button>
-            <button class="pill-btn" data-cat="Réseau local">Réseau local</button>
-            <button class="pill-btn" data-cat="Sécurité / Configuration">Sécurité / Configuration</button>
-            <button class="pill-btn" data-cat="Sécurité / IDE">Sécurité / IDE</button>
-            <button class="pill-btn" data-cat="Sécurité web">Sécurité web</button>
-          </div>
-        </div>
+      <div class="results-bar">
+        <span>Résultats du glossaire :</span>
+        <span class="counter-tag" id="glossaryCounterTag">57 termes</span>
+      </div>
 
+      <div class="cards-container" id="glossaryCardsContainer"></div>
+
+      <div class="empty-state" id="glossaryEmptyState">
+        <div class="empty-title">Aucun terme ne correspond à la recherche</div>
+        <div class="empty-desc">Essayez avec d'autres mots-clés ou réinitialisez les filtres.</div>
+        <button class="reset-btn" id="glossaryResetBtn">Réinitialiser les filtres</button>
       </div>
 
     </div>
 
-    <div class="results-bar">
-      <span>Résultats :</span>
-      <span class="counter-tag" id="counterTag">57 termes</span>
-    </div>
+    <!-- ============================================== -->
+    <!-- ONGLET 2 : BIBLIOTHÈQUE DE PROMPTS             -->
+    <!-- ============================================== -->
+    <div class="tab-view" id="promptsView">
+      
+      <div class="search-filter-section" id="promptsFilterSection">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="promptsSearchInput" class="search-input" placeholder="Rechercher dans les prompts (mot-clé, Vercel, refactoring...)" autocomplete="off">
+          <button id="promptsClearBtn" class="clear-btn" title="Effacer">✕</button>
+        </div>
 
-    <div class="cards-container" id="cardsContainer"></div>
+        <div class="filter-group">
+          <div class="filter-label">Filtrer par Tag / Sujet :</div>
+          <div class="pills-row" id="promptTagPills">
+            <button class="pill-btn active" data-tag="ALL">Tous (11)</button>
+            <button class="pill-btn " data-tag="Accessibilité">Accessibilité</button>
+            <button class="pill-btn " data-tag="Architecture">Architecture</button>
+            <button class="pill-btn " data-tag="Cadrage">Cadrage</button>
+            <button class="pill-btn " data-tag="Clean Code">Clean Code</button>
+            <button class="pill-btn " data-tag="Data">Data</button>
+            <button class="pill-btn " data-tag="Débogage">Débogage</button>
+            <button class="pill-btn " data-tag="Déploiement">Déploiement</button>
+            <button class="pill-btn tag-exemple" data-tag="Exemple">Exemple</button>
+            <button class="pill-btn " data-tag="Fonctionnalité">Fonctionnalité</button>
+            <button class="pill-btn " data-tag="Frontend">Frontend</button>
+            <button class="pill-btn " data-tag="Google AI Studio">Google AI Studio</button>
+            <button class="pill-btn " data-tag="Maintenance">Maintenance</button>
+            <button class="pill-btn " data-tag="Mobile">Mobile</button>
+            <button class="pill-btn " data-tag="Mock">Mock</button>
+            <button class="pill-btn " data-tag="Méthode">Méthode</button>
+            <button class="pill-btn " data-tag="Performance">Performance</button>
+            <button class="pill-btn " data-tag="Refactoring">Refactoring</button>
+            <button class="pill-btn " data-tag="Serverless">Serverless</button>
+            <button class="pill-btn " data-tag="Sécurité">Sécurité</button>
+            <button class="pill-btn " data-tag="UI / UX">UI / UX</button>
+            <button class="pill-btn " data-tag="Vercel">Vercel</button>
+          </div>
+        </div>
+      </div>
 
-    <div class="empty-state" id="emptyState">
-      <div class="empty-title">Aucun terme ne correspond à la recherche</div>
-      <div class="empty-desc">Essayez avec d'autres mots-clés ou cliquez sur un autre filtre.</div>
-      <button class="reset-btn" id="resetBtn">Réinitialiser tous les filtres</button>
+      <div class="results-bar">
+        <span>Prompts disponibles :</span>
+        <span class="counter-tag" id="promptsCounterTag">11 prompts</span>
+      </div>
+
+      <div class="cards-container" id="promptsCardsContainer"></div>
+
+      <div class="empty-state" id="promptsEmptyState">
+        <div class="empty-title">Aucun prompt ne correspond à vos critères</div>
+        <div class="empty-desc">Modifiez votre recherche ou réinitialisez les filtres.</div>
+        <button class="reset-btn" id="promptsResetBtn">Afficher tous les prompts</button>
+      </div>
+
     </div>
 
   </div>
 
-  <script>
-    const TERMS_DATA = [{"id": 1, "word": "AGENTS.md", "statut": "Défini", "category": "Fichier de contexte / Méthode", "definition": "Fichier texte situé à la racine d'un projet, regroupant les consignes, les technologies autorisées et les règles de travail strictes à faire respecter par l'agent IA.", "ref": "M4C3L1 — La gestion des agents IA dans un IDE local", "module": "M4"}, {"id": 2, "word": "Antigravity", "statut": "Défini", "category": "IDE / Agent SOTA", "definition": "Éditeur de code intelligent sur ordinateur permettant de piloter des assistants IA autonomes et d'exécuter des séquences de travail avancées.", "ref": "M4C1L1 — Découvrir les bases d'Antigravity", "module": "M4"}, {"id": 3, "word": "API (Application Programming Interface)", "statut": "Défini", "category": "Architecture", "definition": "Passerelle et ensemble de règles permettant à deux applications ou services informatiques de communiquer et d'échanger des informations automatiquement.", "ref": "M4C4L4 — Connecter l'interface Front-end au serveur local", "module": "M4"}, {"id": 4, "word": "Bac à sable (sandboxing)", "statut": "Non défini (Cité)", "category": "Sécurité / IDE", "definition": "Zone d'exécution isolée et sécurisée qui limite les accès réseau et ordinateur d'une IA afin d'éviter toute commande dangereuse.", "ref": "M1C4L5 — Mettre en place une routine de veille efficace", "module": "M1"}, {"id": 5, "word": "Back-end", "statut": "Défini", "category": "Architecture", "definition": "Coulisses et partie serveur d'une application, chargées du traitement des données, des règles internes et des échanges avec la base de données.", "ref": "M1C3L1 — Différencier le Front-end et le Back-end", "module": "M1"}, {"id": 6, "word": "Bolt.new", "statut": "Défini", "category": "Outil / Plateforme", "definition": "Outil de création d'applications web utilisable dans le navigateur, permettant de générer et tester un projet complet directement en ligne.", "ref": "M2C3L1 — Prise en main de Bolt.new", "module": "M2"}, {"id": 7, "word": "Branche Git", "statut": "Défini", "category": "Concept Git", "definition": "Copie parallèle du projet permettant de développer et tester une nouveauté en toute sécurité sans modifier la version principale.", "ref": "M4C4L7 — Maîtriser Git local (Commits & Branches)", "module": "M4"}, {"id": 8, "word": "Browser agent", "statut": "Défini", "category": "Outil IA", "definition": "Assistant IA capable de naviguer seul sur le web, d'interagir avec les éléments d'une page et de vérifier le fonctionnement d'une interface.", "ref": "M4C3L6 — Comprendre et utiliser un Browser Agent", "module": "M4"}, {"id": 9, "word": "Claude 3.5 Sonnet", "statut": "Défini", "category": "Modèle IA", "definition": "Modèle d'intelligence artificielle développé par Anthropic, très performant pour la rédaction de code et la résolution de problèmes complexes.", "ref": "M3C2L1 — Prise en main de Cursor pour le mobile", "module": "M3"}, {"id": 10, "word": "Commit", "statut": "Défini", "category": "Concept Git", "definition": "Sauvegarde horodatée de l'état du code source à un instant précis, accompagnée d'un message expliquant le changement effectué.", "ref": "M4C1L8 — Réaliser ses premiers commits avec l'agent", "module": "M4"}, {"id": 11, "word": "Composant UI", "statut": "Défini", "category": "Concept web", "definition": "Élément visuel autonome et réutilisable dans une interface (ex. : bouton, carte d'information, formulaire).", "ref": "M2C2L3 — Modifier et affiner le design en langage naturel", "module": "M2"}, {"id": 12, "word": "Contexte (context window)", "statut": "Défini", "category": "Concept IA", "definition": "Quantité maximale de mémoire (mesurée en tokens) qu'une IA peut lire et conserver en tête au cours d'une même session.", "ref": "M1C2L3 — Gérer le contexte et la mémoire de l'agent", "module": "M1"}, {"id": 13, "word": "Cross-platform", "statut": "Défini", "category": "Architecture", "definition": "Capacité d'un même projet de code à fonctionner sans réécriture sur plusieurs systèmes (iOS, Android, web).", "ref": "M3C1L1 — Introduction à la création d'applications mobiles", "module": "M3"}, {"id": 14, "word": "CSS (Cascading Style Sheets)", "statut": "Défini", "category": "Langage", "definition": "Langage responsable du style visuel des pages web, gérant les couleurs, la typographie et la disposition des éléments.", "ref": "M1C3L3 — Les bases du CSS", "module": "M1"}, {"id": 15, "word": "Cursor", "statut": "Défini", "category": "IDE / Outil", "definition": "Logiciel d'édition de code sur ordinateur qui intègre directement des assistants IA pour créer, corriger et faire évoluer des projets.", "ref": "M3C2L1 — Prise en main de Cursor pour le mobile", "module": "M3"}, {"id": 16, "word": "DOM (Document Object Model)", "statut": "Défini", "category": "Concept web", "definition": "Structure organisée d'une page web que le langage JavaScript peut lire et modifier en temps réel (textes, boutons, affichage).", "ref": "M1C3L4 — Les bases du JavaScript", "module": "M1"}, {"id": 17, "word": "Dépôt Git (repository)", "statut": "Non défini (Cité)", "category": "Concept Git", "definition": "Dossier de projet suivi par Git, qui conserve la totalité des fichiers, de l'historique des sauvegardes et des branches.", "ref": "M1C1L4 — Découvrir l'écosystème Git et GitHub", "module": "M1"}, {"id": 18, "word": "Endpoint", "statut": "Défini", "category": "Architecture / Web", "definition": "Adresse web spécifique d'une API permettant à une application d'envoyer ou de demander une donnée précise au serveur.", "ref": "M4C4L4 — Connecter l'interface Front-end au serveur local", "module": "M4"}, {"id": 19, "word": ".env (.env.local)", "statut": "Défini", "category": "Sécurité / Configuration", "definition": "Fichier texte confidentiel servant à stocker les clés d'accès (API) et les réglages secrets à l'écart du code public.", "ref": "M4C4L5 — Isoler ses secrets et variables locales dans .env.local", "module": "M4"}, {"id": 20, "word": "Expo", "statut": "Défini", "category": "Outil / Framework", "definition": "Ensemble d'outils simplifiant la création, le test et la publication d'applications mobiles développées avec React Native.", "ref": "M3C1L2 — Découvrir l'écosystème Expo & React Native", "module": "M3"}, {"id": 21, "word": "Express.js", "statut": "Défini", "category": "Framework backend", "definition": "Outil côté serveur pour Node.js facilitant la création de passerelles (API) et la gestion des chemins de navigation web.", "ref": "M4C4L3 — Générer son premier serveur local (Node.js/Express)", "module": "M4"}, {"id": 22, "word": "Front-end", "statut": "Défini", "category": "Architecture", "definition": "Interface visuelle et partie écran d'une application, directement visible et manipulable par l'utilisateur.", "ref": "M1C3L1 — Différencier le Front-end et le Back-end", "module": "M1"}, {"id": 23, "word": "Git", "statut": "Défini", "category": "Outil / VCS", "definition": "Outil de suivi de version qui enregistre chaque évolution du code et permet d'annuler ou de comparer les modifications.", "ref": "M4C1L8 — Sauvegarder son travail avec Git", "module": "M4"}, {"id": 24, "word": "GitHub", "statut": "Défini", "category": "Plateforme / Cloud", "definition": "Service en ligne permettant d'héberger des projets Git sur internet, de les sauvegarder à distance et de travailler à plusieurs.", "ref": "M4C1L8 — Sauvegarder son travail avec Git", "module": "M4"}, {"id": 25, "word": ".gitignore", "statut": "Non défini (Cité)", "category": "Fichier de config Git", "definition": "Fichier indiquant à Git les documents temporaires, clés confidentielles ou dossiers lourds à ne jamais inclure dans les sauvegardes.", "ref": "M2C5L3 — Bannir les clés API et secrets de ses prompts", "module": "M2"}, {"id": 26, "word": "Hallucination IA", "statut": "Défini", "category": "Concept IA / Risque", "definition": "Situation où une IA invente des réponses, des lignes de code ou des noms d'outils inexacts tout en paraissant certaine d'elle-même.", "ref": "M1C2L5 — Identifier les pièges et limites de l'IA", "module": "M1"}, {"id": 27, "word": "HTML (HyperText Markup Language)", "statut": "Défini", "category": "Langage", "definition": "Langage de base définissant la structure et le contenu d'une page web (titres, textes, images, liens).", "ref": "M1C3L2 — Les bases du HTML", "module": "M1"}, {"id": 28, "word": "HTTP / HTTPS", "statut": "Non défini (Cité)", "category": "Protocole web", "definition": "Règles de communication du web régissant l'échange d'informations entre le navigateur et le serveur (version HTTPS sécurisée et chiffrée).", "ref": "M1C3L5 — Comprendre le réseau et les requêtes web", "module": "M1"}, {"id": 29, "word": "IA générative (LLM)", "statut": "Défini", "category": "Concept IA", "definition": "Intelligence artificielle entraînée sur de vastes volumes de données, capable de comprendre et de produire du texte ou du code sur demande.", "ref": "M1C1L3 — Comprendre le rôle de l'IA dans la création de logiciels", "module": "M1"}, {"id": 30, "word": "IDE agentique", "statut": "Défini", "category": "Concept / Outil", "definition": "Logiciel de création de code où l'IA peut lire le projet, créer des fichiers et exécuter elle-même des commandes système.", "ref": "M4C1L2 — Pourquoi utiliser un IDE agentique local ?", "module": "M4"}, {"id": 31, "word": "Injection SQL", "statut": "Défini", "category": "Sécurité web", "definition": "Faille de sécurité consistant à piéger un formulaire en y saisissant du code malveillant pour pirater la base de données.", "ref": "M2C5L6 — La chaîne de confiance et la sécurité", "module": "M2"}, {"id": 32, "word": "JavaScript (JS)", "statut": "Défini", "category": "Langage", "definition": "Langage de programmation rendant les pages web interactives et capables de réagir aux actions (clics, animations, calculs).", "ref": "M1C3L4 — Les bases du JavaScript", "module": "M1"}, {"id": 33, "word": "JSON (JavaScript Object Notation)", "statut": "Défini", "category": "Format de données", "definition": "Format texte standardisé permettant d'échanger des données lisibles sous la forme de clés et de valeurs (ex. : `nom: \"Jean\"`).", "ref": "M1C3L4 — Les bases du JavaScript", "module": "M1"}, {"id": 34, "word": "Layout / flexbox", "statut": "Défini", "category": "Concept web / Mobile", "definition": "Système de disposition en CSS facilitant l'alignement, le centrage et l'espacement des éléments sur un écran.", "ref": "M3C3L1 — Concevoir l'interface mobile", "module": "M3"}, {"id": 35, "word": "Localhost & port réseau", "statut": "Non défini (Cité)", "category": "Réseau local", "definition": "Adresse de son propre ordinateur (localhost) et numéro de porte virtuelle (port) servant à tester une application avant sa mise en ligne.", "ref": "M1C4L6 — Comprendre et utiliser le terminal", "module": "M1"}, {"id": 36, "word": "Logs d'erreur", "statut": "Défini", "category": "Débogage", "definition": "Journal enregistrant au fur et à mesure les événements, avertissements et dysfonctionnements survenus dans une application.", "ref": "M4C4L6 — Déboguer la chaîne Front-Back et lire les logs", "module": "M4"}, {"id": 37, "word": "Lovable", "statut": "Défini", "category": "Outil / Plateforme", "definition": "Outil en ligne de Vibe Coding qui permet de générer et modifier des applications web complètes en discutant en français.", "ref": "M2C2L1 — Prise en main de Lovable", "module": "M2"}, {"id": 38, "word": "Mode chat", "statut": "Défini", "category": "Mode IDE", "definition": "Mode de discussion où l'on pose des questions à l'IA ou demande une explication sans modifier directement les fichiers.", "ref": "M4C2L3 — Le mode Chat", "module": "M4"}, {"id": 39, "word": "Mode composer", "statut": "Défini", "category": "Mode IDE", "definition": "Mode de travail où l'agent IA agit directement sur le projet en créant ou modifiant lui-même les fichiers de code.", "ref": "M4C2L4 — Le mode Composer", "module": "M4"}, {"id": 40, "word": "Mode plan", "statut": "Défini", "category": "Mode IDE", "definition": "Mode de cadrage dans lequel l'agent IA établit une feuille de route étape par étape avant d'entamer la création du code.", "ref": "M4C2L6 — Le mode Plan", "module": "M4"}, {"id": 41, "word": "No-code / low-code", "statut": "Défini", "category": "Méthode", "definition": "Méthodes de création d'applications reposant sur des outils visuels qui réduisent ou éliminent le besoin de coder à la main.", "ref": "M2C1L1 — Comparatif des plateformes de Vibe Coding Web", "module": "M2"}, {"id": 42, "word": "Node.js", "statut": "Défini", "category": "Environnement d'exécution", "definition": "Outil permettant d'exécuter du code JavaScript en coulisses sur un serveur ou un ordinateur, en dehors d'un simple navigateur web.", "ref": "M4C4L3 — Générer son premier serveur local (Node.js/Express)", "module": "M4"}, {"id": 43, "word": "Prompt engineering", "statut": "Défini", "category": "Méthode", "definition": "Art de concevoir et d'affiner des instructions claires pour guider précisément les réponses d'une intelligence artificielle.", "ref": "M1C2L1 — Découvrir l'art du Prompt Engineering", "module": "M1"}, {"id": 44, "word": "Prompt zero", "statut": "Défini", "category": "Méthode prompting", "definition": "Instruction de départ définissant l'objectif, les technologies retenues et les règles fondamentales avant de démarrer la création d'un projet.", "ref": "M2C3L4 — Découvrir le Prompt Zero", "module": "M2"}, {"id": 45, "word": "Prompting", "statut": "Défini", "category": "Méthode", "definition": "Action de formuler des consignes écrites pour demander un résultat précis à une intelligence artificielle.", "ref": "M1C1L2 — Qu'est-ce que le Vibe Coding ?", "module": "M1"}, {"id": 46, "word": "RAG (Retrieval-Augmented Generation)", "statut": "Non défini (Cité)", "category": "Concept IA", "definition": "Méthode fournissant automatiquement des documents ou du code réel à l'IA avant qu'elle ne réponde, afin de garantir des informations exactes.", "ref": "M1C4L3 — L'injection de contexte et la documentation", "module": "M1"}, {"id": 47, "word": "React", "statut": "Défini", "category": "Framework / Bibliothèque", "definition": "Outil populaire créé par Meta pour construire des interfaces web dynamiques en les découpant en éléments réutilisables.", "ref": "M2C2L2 — Générer sa première application web avec Lovable", "module": "M2"}, {"id": 48, "word": "React Native", "statut": "Défini", "category": "Framework", "definition": "Outil créé par Meta permettant de fabriquer des applications mobiles pour iPhone (iOS) et Android en utilisant du code JavaScript.", "ref": "M3C1L1 — Introduction à la création d'applications mobiles", "module": "M3"}, {"id": 49, "word": "Refactorisation (refactoring)", "statut": "Non défini (Cité)", "category": "Méthode de code", "definition": "Réorganisation et nettoyage du code source pour le rendre plus lisible et mieux structuré, sans en changer le fonctionnement visuel.", "ref": "M4C5L2 — Refactoriser son code avec l'agent", "module": "M4"}, {"id": 50, "word": "Responsive design", "statut": "Défini", "category": "Méthode / Design", "definition": "Technique d'aménagement visuel permettant à un site de s'adapter automatiquement à la taille des écrans (smartphone, tablette, ordinateur).", "ref": "M2C2L3 — Modifier et affiner le design", "module": "M2"}, {"id": 51, "word": "SKILL (compétence agent)", "statut": "Défini", "category": "Extension IA", "definition": "Module complémentaire ou guide d'instructions ajoutant une capacité spécialisée à un agent IA pour une mission donnée.", "ref": "M4C3L8 — Comprendre et utiliser des SKILLS", "module": "M4"}, {"id": 52, "word": "Sous-agent (subagent)", "statut": "Défini", "category": "Concept IA", "definition": "Second assistant IA démarré en arrière-plan pour accomplir une mission précise sans interrompre le travail principal.", "ref": "M4C3L4 — Les sous-agents et la parallélisation de tâches", "module": "M4"}, {"id": 53, "word": "Tailwind CSS", "statut": "Défini", "category": "Framework CSS", "definition": "Outil de mise en forme permettant d'appliquer rapidement du style sur des éléments web grâce à des étiquettes prêtes à l'emploi.", "ref": "M2C2L2 — Générer sa première application web me avec Lovable", "module": "M2"}, {"id": 54, "word": "Terminal / CLI", "statut": "Défini", "category": "Outil / Interface", "definition": "Fenêtre textuelle permettant de donner des ordres directs à son ordinateur ou à ses outils en tapant des lignes de commande.", "ref": "M4C1L6 — Comprendre le terminal & les commandes clés", "module": "M4"}, {"id": 55, "word": "Token", "statut": "Défini", "category": "Concept IA / Métrique", "definition": "Morceau de texte de quelques lettres servant d'unité de compte pour la mémoire d'une IA (1 000 tokens représentent environ 750 mots).", "ref": "M1C2L3 — Gérer le contexte et la mémoire de l'agent", "module": "M1"}, {"id": 56, "word": "v0 (by Vercel)", "statut": "Défini", "category": "Outil / Plateforme", "definition": "Outil web d'IA conçu par Vercel, capable de générer instantanément le code visuel d'interfaces web à partir d'une simple description.", "ref": "M2C4L1 — Prise en main de v0 by Vercel", "module": "M2"}, {"id": 57, "word": "Vibe coding", "statut": "Défini", "category": "Méthode / Philosophie", "definition": "Manière de créer des logiciels en pilotant des agents IA en langage naturel (français courant), sans avoir à rédiger le code à la main.", "ref": "M1C1L2 — Qu'est-ce que le Vibe Coding ?", "module": "M1"}];
+  <div class="toast-msg" id="toastMsg">Notification</div>
 
+  <script>
+    const GLOSSARY_DATA = [{"id": 1, "word": "AGENTS.md", "statut": "Défini", "category": "Fichier de contexte / Méthode", "definition": "Fichier texte situé à la racine d'un projet, regroupant les consignes, les technologies autorisées et les règles de travail strictes à faire respecter par l'agent IA.", "ref": "M4C3L1 — La gestion des agents IA dans un IDE local", "module": "M4"}, {"id": 2, "word": "Antigravity", "statut": "Défini", "category": "IDE / Agent SOTA", "definition": "Éditeur de code intelligent sur ordinateur permettant de piloter des assistants IA autonomes et d'exécuter des séquences de travail avancées.", "ref": "M4C1L1 — Découvrir les bases d'Antigravity", "module": "M4"}, {"id": 3, "word": "API (Application Programming Interface)", "statut": "Défini", "category": "Architecture", "definition": "Passerelle et ensemble de règles permettant à deux applications ou services informatiques de communiquer et d'échanger des informations automatiquement.", "ref": "M4C4L4 — Connecter l'interface Front-end au serveur local", "module": "M4"}, {"id": 4, "word": "Bac à sable (sandboxing)", "statut": "Non défini (Cité)", "category": "Sécurité / IDE", "definition": "Zone d'exécution isolée et sécurisée qui limite les accès réseau et ordinateur d'une IA afin d'éviter toute commande dangereuse.", "ref": "M1C4L5 — Mettre en place une routine de veille efficace", "module": "M1"}, {"id": 5, "word": "Back-end", "statut": "Défini", "category": "Architecture", "definition": "Coulisses et partie serveur d'une application, chargées du traitement des données, des règles internes et des échanges avec la base de données.", "ref": "M1C3L1 — Différencier le Front-end et le Back-end", "module": "M1"}, {"id": 6, "word": "Bolt.new", "statut": "Défini", "category": "Outil / Plateforme", "definition": "Outil de création d'applications web utilisable dans le navigateur, permettant de générer et tester un projet complet directement en ligne.", "ref": "M2C3L1 — Prise en main de Bolt.new", "module": "M2"}, {"id": 7, "word": "Branche Git", "statut": "Défini", "category": "Concept Git", "definition": "Copie parallèle du projet permettant de développer et tester une nouveauté en toute sécurité sans modifier la version principale.", "ref": "M4C4L7 — Maîtriser Git local (Commits & Branches)", "module": "M4"}, {"id": 8, "word": "Browser agent", "statut": "Défini", "category": "Outil IA", "definition": "Assistant IA capable de naviguer seul sur le web, d'interagir avec les éléments d'une page et de vérifier le fonctionnement d'une interface.", "ref": "M4C3L6 — Comprendre et utiliser un Browser Agent", "module": "M4"}, {"id": 9, "word": "Claude 3.5 Sonnet", "statut": "Défini", "category": "Modèle IA", "definition": "Modèle d'intelligence artificielle développé par Anthropic, très performant pour la rédaction de code et la résolution de problèmes complexes.", "ref": "M3C2L1 — Prise en main de Cursor pour le mobile", "module": "M3"}, {"id": 10, "word": "Commit", "statut": "Défini", "category": "Concept Git", "definition": "Sauvegarde horodatée de l'état du code source à un instant précis, accompagnée d'un message expliquant le changement effectué.", "ref": "M4C1L8 — Réaliser ses premiers commits avec l'agent", "module": "M4"}, {"id": 11, "word": "Composant UI", "statut": "Défini", "category": "Concept web", "definition": "Élément visuel autonome et réutilisable dans une interface (ex. : bouton, carte d'information, formulaire).", "ref": "M2C2L3 — Modifier et affiner le design en langage naturel", "module": "M2"}, {"id": 12, "word": "Contexte (context window)", "statut": "Défini", "category": "Concept IA", "definition": "Quantité maximale de mémoire (mesurée en tokens) qu'une IA peut lire et conserver en tête au cours d'une même session.", "ref": "M1C2L3 — Gérer le contexte et la mémoire de l'agent", "module": "M1"}, {"id": 13, "word": "Cross-platform", "statut": "Défini", "category": "Architecture", "definition": "Capacité d'un même projet de code à fonctionner sans réécriture sur plusieurs systèmes (iOS, Android, web).", "ref": "M3C1L1 — Introduction à la création d'applications mobiles", "module": "M3"}, {"id": 14, "word": "CSS (Cascading Style Sheets)", "statut": "Défini", "category": "Langage", "definition": "Langage responsable du style visuel des pages web, gérant les couleurs, la typographie et la disposition des éléments.", "ref": "M1C3L3 — Les bases du CSS", "module": "M1"}, {"id": 15, "word": "Cursor", "statut": "Défini", "category": "IDE / Outil", "definition": "Logiciel d'édition de code sur ordinateur qui intègre directement des assistants IA pour créer, corriger et faire évoluer des projets.", "ref": "M3C2L1 — Prise en main de Cursor pour le mobile", "module": "M3"}, {"id": 16, "word": "DOM (Document Object Model)", "statut": "Défini", "category": "Concept web", "definition": "Structure organisée d'une page web que le langage JavaScript peut lire et modifier en temps réel (textes, boutons, affichage).", "ref": "M1C3L4 — Les bases du JavaScript", "module": "M1"}, {"id": 17, "word": "Dépôt Git (repository)", "statut": "Non défini (Cité)", "category": "Concept Git", "definition": "Dossier de projet suivi par Git, qui conserve la totalité des fichiers, de l'historique des sauvegardes et des branches.", "ref": "M1C1L4 — Découvrir l'écosystème Git et GitHub", "module": "M1"}, {"id": 18, "word": "Endpoint", "statut": "Défini", "category": "Architecture / Web", "definition": "Adresse web spécifique d'une API permettant à une application d'envoyer ou de demander une donnée précise au serveur.", "ref": "M4C4L4 — Connecter l'interface Front-end au serveur local", "module": "M4"}, {"id": 19, "word": ".env (.env.local)", "statut": "Défini", "category": "Sécurité / Configuration", "definition": "Fichier texte confidentiel servant à stocker les clés d'accès (API) et les réglages secrets à l'écart du code public.", "ref": "M4C4L5 — Isoler ses secrets et variables locales dans .env.local", "module": "M4"}, {"id": 20, "word": "Expo", "statut": "Défini", "category": "Outil / Framework", "definition": "Ensemble d'outils simplifiant la création, le test et la publication d'applications mobiles développées avec React Native.", "ref": "M3C1L2 — Découvrir l'écosystème Expo & React Native", "module": "M3"}, {"id": 21, "word": "Express.js", "statut": "Défini", "category": "Framework backend", "definition": "Outil côté serveur pour Node.js facilitant la création de passerelles (API) et la gestion des chemins de navigation web.", "ref": "M4C4L3 — Générer son premier serveur local (Node.js/Express)", "module": "M4"}, {"id": 22, "word": "Front-end", "statut": "Défini", "category": "Architecture", "definition": "Interface visuelle et partie écran d'une application, directement visible et manipulable par l'utilisateur.", "ref": "M1C3L1 — Différencier le Front-end et le Back-end", "module": "M1"}, {"id": 23, "word": "Git", "statut": "Défini", "category": "Outil / VCS", "definition": "Outil de suivi de version qui enregistre chaque évolution du code et permet d'annuler ou de comparer les modifications.", "ref": "M4C1L8 — Sauvegarder son travail avec Git", "module": "M4"}, {"id": 24, "word": "GitHub", "statut": "Défini", "category": "Plateforme / Cloud", "definition": "Service en ligne permettant d'héberger des projets Git sur internet, de les sauvegarder à distance et de travailler à plusieurs.", "ref": "M4C1L8 — Sauvegarder son travail avec Git", "module": "M4"}, {"id": 25, "word": ".gitignore", "statut": "Non défini (Cité)", "category": "Fichier de config Git", "definition": "Fichier indiquant à Git les documents temporaires, clés confidentielles ou dossiers lourds à ne jamais inclure dans les sauvegardes.", "ref": "M2C5L3 — Bannir les clés API et secrets de ses prompts", "module": "M2"}, {"id": 26, "word": "Hallucination IA", "statut": "Défini", "category": "Concept IA / Risque", "definition": "Situation où une IA invente des réponses, des lignes de code ou des noms d'outils inexacts tout en paraissant certaine d'elle-même.", "ref": "M1C2L5 — Identifier les pièges et limites de l'IA", "module": "M1"}, {"id": 27, "word": "HTML (HyperText Markup Language)", "statut": "Défini", "category": "Langage", "definition": "Langage de base définissant la structure et le contenu d'une page web (titres, textes, images, liens).", "ref": "M1C3L2 — Les bases du HTML", "module": "M1"}, {"id": 28, "word": "HTTP / HTTPS", "statut": "Non défini (Cité)", "category": "Protocole web", "definition": "Règles de communication du web régissant l'échange d'informations entre le navigateur et le serveur (version HTTPS sécurisée et chiffrée).", "ref": "M1C3L5 — Comprendre le réseau et les requêtes web", "module": "M1"}, {"id": 29, "word": "IA générative (LLM)", "statut": "Défini", "category": "Concept IA", "definition": "Intelligence artificielle entraînée sur de vastes volumes de données, capable de comprendre et de produire du texte ou du code sur demande.", "ref": "M1C1L3 — Comprendre le rôle de l'IA dans la création de logiciels", "module": "M1"}, {"id": 30, "word": "IDE agentique", "statut": "Défini", "category": "Concept / Outil", "definition": "Logiciel de création de code où l'IA peut lire le projet, créer des fichiers et exécuter elle-même des commandes système.", "ref": "M4C1L2 — Pourquoi utiliser un IDE agentique local ?", "module": "M4"}, {"id": 31, "word": "Injection SQL", "statut": "Défini", "category": "Sécurité web", "definition": "Faille de sécurité consistant à piéger un formulaire en y saisissant du code malveillant pour pirater la base de données.", "ref": "M2C5L6 — La chaîne de confiance et la sécurité", "module": "M2"}, {"id": 32, "word": "JavaScript (JS)", "statut": "Défini", "category": "Langage", "definition": "Langage de programmation rendant les pages web interactives et capables de réagir aux actions (clics, animations, calculs).", "ref": "M1C3L4 — Les bases du JavaScript", "module": "M1"}, {"id": 33, "word": "JSON (JavaScript Object Notation)", "statut": "Défini", "category": "Format de données", "definition": "Format texte standardisé permettant d'échanger des données lisibles sous la forme de clés et de valeurs (ex. : `nom: \"Jean\"`).", "ref": "M1C3L4 — Les bases du JavaScript", "module": "M1"}, {"id": 34, "word": "Layout / flexbox", "statut": "Défini", "category": "Concept web / Mobile", "definition": "Système de disposition en CSS facilitant l'alignement, le centrage et l'espacement des éléments sur un écran.", "ref": "M3C3L1 — Concevoir l'interface mobile", "module": "M3"}, {"id": 35, "word": "Localhost & port réseau", "statut": "Non défini (Cité)", "category": "Réseau local", "definition": "Adresse de son propre ordinateur (localhost) et numéro de porte virtuelle (port) servant à tester une application avant sa mise en ligne.", "ref": "M1C4L6 — Comprendre et utiliser le terminal", "module": "M1"}, {"id": 36, "word": "Logs d'erreur", "statut": "Défini", "category": "Débogage", "definition": "Journal enregistrant au fur et à mesure les événements, avertissements et dysfonctionnements survenus dans une application.", "ref": "M4C4L6 — Déboguer la chaîne Front-Back et lire les logs", "module": "M4"}, {"id": 37, "word": "Lovable", "statut": "Défini", "category": "Outil / Plateforme", "definition": "Outil en ligne de Vibe Coding qui permet de générer et modifier des applications web complètes en discutant en français.", "ref": "M2C2L1 — Prise en main de Lovable", "module": "M2"}, {"id": 38, "word": "Mode chat", "statut": "Défini", "category": "Mode IDE", "definition": "Mode de discussion où l'on pose des questions à l'IA ou demande une explication sans modifier directement les fichiers.", "ref": "M4C2L3 — Le mode Chat", "module": "M4"}, {"id": 39, "word": "Mode composer", "statut": "Défini", "category": "Mode IDE", "definition": "Mode de travail où l'agent IA agit directement sur le projet en créant ou modifiant lui-même les fichiers de code.", "ref": "M4C2L4 — Le mode Composer", "module": "M4"}, {"id": 40, "word": "Mode plan", "statut": "Défini", "category": "Mode IDE", "definition": "Mode de cadrage dans lequel l'agent IA établit une feuille de route étape par étape avant d'entamer la création du code.", "ref": "M4C2L6 — Le mode Plan", "module": "M4"}, {"id": 41, "word": "No-code / low-code", "statut": "Défini", "category": "Méthode", "definition": "Méthodes de création d'applications reposant sur des outils visuels qui réduisent ou éliminent le besoin de coder à la main.", "ref": "M2C1L1 — Comparatif des plateformes de Vibe Coding Web", "module": "M2"}, {"id": 42, "word": "Node.js", "statut": "Défini", "category": "Environnement d'exécution", "definition": "Outil permettant d'exécuter du code JavaScript en coulisses sur un serveur ou un ordinateur, en dehors d'un simple navigateur web.", "ref": "M4C4L3 — Générer son premier serveur local (Node.js/Express)", "module": "M4"}, {"id": 43, "word": "Prompt engineering", "statut": "Défini", "category": "Méthode", "definition": "Art de concevoir et d'affiner des instructions claires pour guider précisément les réponses d'une intelligence artificielle.", "ref": "M1C2L1 — Découvrir l'art du Prompt Engineering", "module": "M1"}, {"id": 44, "word": "Prompt zero", "statut": "Défini", "category": "Méthode prompting", "definition": "Instruction de départ définissant l'objectif, les technologies retenues et les règles fondamentales avant de démarrer la création d'un projet.", "ref": "M2C3L4 — Découvrir le Prompt Zero", "module": "M2"}, {"id": 45, "word": "Prompting", "statut": "Défini", "category": "Méthode", "definition": "Action de formuler des consignes écrites pour demander un résultat précis à une intelligence artificielle.", "ref": "M1C1L2 — Qu'est-ce que le Vibe Coding ?", "module": "M1"}, {"id": 46, "word": "RAG (Retrieval-Augmented Generation)", "statut": "Non défini (Cité)", "category": "Concept IA", "definition": "Méthode fournissant automatiquement des documents ou du code réel à l'IA avant qu'elle ne réponde, afin de garantir des informations exactes.", "ref": "M1C4L3 — L'injection de contexte et la documentation", "module": "M1"}, {"id": 47, "word": "React", "statut": "Défini", "category": "Framework / Bibliothèque", "definition": "Outil populaire créé par Meta pour construire des interfaces web dynamiques en les découpant en éléments réutilisables.", "ref": "M2C2L2 — Générer sa première application web avec Lovable", "module": "M2"}, {"id": 48, "word": "React Native", "statut": "Défini", "category": "Framework", "definition": "Outil créé par Meta permettant de fabriquer des applications mobiles pour iPhone (iOS) et Android en utilisant du code JavaScript.", "ref": "M3C1L1 — Introduction à la création d'applications mobiles", "module": "M3"}, {"id": 49, "word": "Refactorisation (refactoring)", "statut": "Non défini (Cité)", "category": "Méthode de code", "definition": "Réorganisation et nettoyage du code source pour le rendre plus lisible et mieux structuré, sans en changer le fonctionnement visuel.", "ref": "M4C5L2 — Refactoriser son code avec l'agent", "module": "M4"}, {"id": 50, "word": "Responsive design", "statut": "Défini", "category": "Méthode / Design", "definition": "Technique d'aménagement visuel permettant à un site de s'adapter automatiquement à la taille des écrans (smartphone, tablette, ordinateur).", "ref": "M2C2L3 — Modifier et affiner le design", "module": "M2"}, {"id": 51, "word": "SKILL (compétence agent)", "statut": "Défini", "category": "Extension IA", "definition": "Module complémentaire ou guide d'instructions ajoutant une capacité spécialisée à un agent IA pour une mission donnée.", "ref": "M4C3L8 — Comprendre et utiliser des SKILLS", "module": "M4"}, {"id": 52, "word": "Sous-agent (subagent)", "statut": "Défini", "category": "Concept IA", "definition": "Second assistant IA démarré en arrière-plan pour accomplir une mission précise sans interrompre le travail principal.", "ref": "M4C3L4 — Les sous-agents et la parallélisation de tâches", "module": "M4"}, {"id": 53, "word": "Tailwind CSS", "statut": "Défini", "category": "Framework CSS", "definition": "Outil de mise en forme permettant d'appliquer rapidement du style sur des éléments web grâce à des étiquettes prêtes à l'emploi.", "ref": "M2C2L2 — Générer sa première application web me avec Lovable", "module": "M2"}, {"id": 54, "word": "Terminal / CLI", "statut": "Défini", "category": "Outil / Interface", "definition": "Fenêtre textuelle permettant de donner des ordres directs à son ordinateur ou à ses outils en tapant des lignes de commande.", "ref": "M4C1L6 — Comprendre le terminal & les commandes clés", "module": "M4"}, {"id": 55, "word": "Token", "statut": "Défini", "category": "Concept IA / Métrique", "definition": "Morceau de texte de quelques lettres servant d'unité de compte pour la mémoire d'une IA (1 000 tokens représentent environ 750 mots).", "ref": "M1C2L3 — Gérer le contexte et la mémoire de l'agent", "module": "M1"}, {"id": 56, "word": "v0 (by Vercel)", "statut": "Défini", "category": "Outil / Plateforme", "definition": "Outil web d'IA conçu par Vercel, capable de générer instantanément le code visuel d'interfaces web à partir d'une simple description.", "ref": "M2C4L1 — Prise en main de v0 by Vercel", "module": "M2"}, {"id": 57, "word": "Vibe coding", "statut": "Défini", "category": "Méthode / Philosophie", "definition": "Manière de créer des logiciels en pilotant des agents IA en langage naturel (français courant), sans avoir à rédiger le code à la main.", "ref": "M1C1L2 — Qu'est-ce que le Vibe Coding ?", "module": "M1"}];
+    const PROMPTS_DATA = [{"id": "vercel-ai-studio-arch", "title": "Adaptation architecture Vercel & Google AI Studio", "description": "Migration vers une architecture serverless compatible Vercel sans casser le fonctionnement dans Google AI Studio.", "prompt": "Adapte l'architecture du projet pour un déploiement Vercel sans casser le comportement actuel dans Google AI studio. Créé les fonctions serverless dans /api et les fichiers nécéssaires.", "tags": ["Déploiement", "Vercel", "Serverless", "Google AI Studio"]}, {"id": "prompt-zero-cadrage", "title": "Prompt Zéro : Cadrage initial et architecture", "description": "Cadrer le projet avec l'agent avant d'écrire la moindre ligne de code.", "prompt": "Agis en tant qu'architecte logiciel et formateur Vibe Coding. Nous allons initialiser un nouveau projet web. Ne génère aucun code pour l'instant. Pose 3 questions ciblées pour valider le périmètre fonctionnel, les outils retenus et la structure des données avant de rédiger le plan d'action.", "tags": ["Exemple", "Cadrage", "Méthode"]}, {"id": "decoupage-modulaire-clean", "title": "Refactoring modulaire d'un composant monolithique", "description": "Découper un composant trop volumineux en briques indépendantes.", "prompt": "Ce composant dépasse 300 lignes et cumule trop de responsabilités. Analyse sa structure et découpe-le en sous-composants réutilisables dans un sous-dossier dédié, sans modifier aucune fonctionnalité visuelle ni logique métier. Présente d'abord le plan de découpe.", "tags": ["Exemple", "Refactoring", "Clean Code", "Frontend"]}, {"id": "analyse-resolution-bug", "title": "Diagnostic d'erreur console et correction ciblée", "description": "Identifier la cause racine d'un bug sans casser les fonctionnalités existantes.", "prompt": "Voici le message d'erreur console exact et le contexte du problème : [COLLER L'ERREUR ICI]. Analyse la chaîne d'exécution, explique la cause racine en une phrase simple, puis propose la correction minimale nécessaire sans introduire de régression.", "tags": ["Exemple", "Débogage", "Maintenance"]}, {"id": "isolation-secrets-env", "title": "Migration et isolation des secrets dans .env.local", "description": "Sécuriser les clés API et paramètres sensibles hors du code source public.", "prompt": "Audit le code pour repérer toutes les clés d'API, secrets ou URLs sensibles codés en dur. Déplace-les dans un fichier .env.local, crée un gabarit .env.example avec des valeurs fictives documentées, et adapte le code pour consommer ces variables de façon sécurisée.", "tags": ["Exemple", "Sécurité", "Architecture"]}, {"id": "composant-ui-accessible", "title": "Composant UI accessible, responsive et mobile-first", "description": "Créer un composant autonome avec gestion clavier, ARIA et responsive.", "prompt": "Crée un composant d'interface [NOM DU COMPOSANT] en respectant une approche mobile-first stricte. Il doit s'adapter à toutes les largeurs d'écran, respecter les standards d'accessibilité (contraste, focus visible, balises sémantiques) et être entièrement autonome.", "tags": ["Exemple", "UI / UX", "Frontend", "Accessibilité"]}, {"id": "mock-api-front-first", "title": "Mise en place d'un service mock de données", "description": "Simuler une API avec latence réseau pour développer l'interface en avance.", "prompt": "Nous développons l'interface avant le serveur. Crée un service de données fictives (mock) réaliste avec un délai simulé de 300ms pour imiter une requête réseau réelle. Gère les états de chargement, de succès et un cas d'erreur simulé pour tester la robustesse de l'affichage.", "tags": ["Exemple", "Mock", "Architecture", "Frontend"]}, {"id": "optimisation-performance-web", "title": "Audit et optimisation de la vitesse d'affichage", "description": "Fluidifier l'application et supprimer les ralentissements sur mobile.", "prompt": "Analyse les performances de cette page web. Repère les goulots d'étranglement (chargements superflus, recalculs de style, taille des assets) et applique les optimisations prioritaires pour rendre l'interface instantanée, même avec un réseau mobile bridé.", "tags": ["Exemple", "Performance", "Frontend", "Mobile"]}, {"id": "securisation-formulaire-xss", "title": "Validation stricte et assainissement d'un formulaire", "description": "Empêcher les injections de code et valider les saisies utilisateurs.", "prompt": "Audit et renforce la sécurité de ce formulaire. Mets en place une validation stricte côté client (formats attendus, longueur maximale) et assainis les données avant tout affichage ou envoi pour prévenir les attaques de type injection XSS.", "tags": ["Exemple", "Sécurité", "Frontend"]}, {"id": "export-donnees-client", "title": "Fonctionnalité d'export de données (CSV / JSON)", "description": "Générer et télécharger un fichier de données directement depuis le navigateur.", "prompt": "Ajoute une action permettant à l'utilisateur d'exporter la liste des éléments actuellement filtrés dans un fichier CSV ou JSON téléchargeable en un clic, exécuté directement côté navigateur sans dépendance lourde.", "tags": ["Exemple", "Fonctionnalité", "Data"]}, {"id": "theme-sombre-persistant", "title": "Interrupteur Mode Sombre / Clair avec localStorage", "description": "Gestion fluide de thème avec détection système et persistance.", "prompt": "Implémente un interrupteur de thème clair / sombre basé sur les variables CSS de la charte. L'état doit être mémorisé dans le localStorage et respecter par défaut la préférence système (prefers-color-scheme) au premier chargement de la page.", "tags": ["Exemple", "UI / UX", "Frontend"]}];
+
+    // État global
+    let currentTab = 'glossary';
+    let isolatedPromptId = null;
+
+    // État Glossaire
     let activeModule = 'ALL';
     let activeCategory = 'ALL';
     let activeLetter = 'ALL';
-    let searchQuery = '';
+    let glossaryQuery = '';
 
-    const searchInput = document.getElementById('searchInput');
-    const clearBtn = document.getElementById('clearBtn');
-    const cardsContainer = document.getElementById('cardsContainer');
-    const counterTag = document.getElementById('counterTag');
-    const emptyState = document.getElementById('emptyState');
-    const resetBtn = document.getElementById('resetBtn');
+    // État Prompts
+    let activePromptTag = 'ALL';
+    let promptsQuery = '';
 
-    const toggleFiltersBtn = document.getElementById('toggleFiltersBtn');
-    const filtersPanel = document.getElementById('filtersPanel');
-    const toggleIcon = document.getElementById('toggleIcon');
+    // Éléments Onglets
+    const tabBtnGlossary = document.getElementById('tabBtnGlossary');
+    const tabBtnPrompts = document.getElementById('tabBtnPrompts');
+    const glossaryView = document.getElementById('glossaryView');
+    const promptsView = document.getElementById('promptsView');
+    const mainTitle = document.getElementById('mainTitle');
+    const mainSubtitle = document.getElementById('mainSubtitle');
+    const isolatedBanner = document.getElementById('isolatedBanner');
+    const btnBackAll = document.getElementById('btnBackAll');
+    const toastMsg = document.getElementById('toastMsg');
 
-    // Gestion de la visibilite du panneau repliable
-    toggleFiltersBtn.addEventListener('click', () => {
-      const isCollapsed = filtersPanel.classList.contains('collapsed');
-      if (isCollapsed) {
-        filtersPanel.classList.remove('collapsed');
-        toggleIcon.classList.add('open');
-        toggleFiltersBtn.setAttribute('aria-expanded', 'true');
+    // Éléments Glossaire
+    const glossarySearchInput = document.getElementById('glossarySearchInput');
+    const glossaryClearBtn = document.getElementById('glossaryClearBtn');
+    const glossaryCardsContainer = document.getElementById('glossaryCardsContainer');
+    const glossaryCounterTag = document.getElementById('glossaryCounterTag');
+    const glossaryEmptyState = document.getElementById('glossaryEmptyState');
+    const glossaryResetBtn = document.getElementById('glossaryResetBtn');
+    const toggleGlossaryFiltersBtn = document.getElementById('toggleGlossaryFiltersBtn');
+    const glossaryFiltersPanel = document.getElementById('glossaryFiltersPanel');
+    const toggleGlossaryIcon = document.getElementById('toggleGlossaryIcon');
+
+    // Éléments Prompts
+    const promptsSearchInput = document.getElementById('promptsSearchInput');
+    const promptsClearBtn = document.getElementById('promptsClearBtn');
+    const promptsFilterSection = document.getElementById('promptsFilterSection');
+    const promptsCardsContainer = document.getElementById('promptsCardsContainer');
+    const promptsCounterTag = document.getElementById('promptsCounterTag');
+    const promptsEmptyState = document.getElementById('promptsEmptyState');
+    const promptsResetBtn = document.getElementById('promptsResetBtn');
+    const promptTagPills = document.getElementById('promptTagPills');
+
+    // --- GESTION DES NOTIFICATIONS TOAST ---
+    function showToast(text) {
+      toastMsg.textContent = text;
+      toastMsg.classList.add('show');
+      setTimeout(() => {
+        toastMsg.classList.remove('show');
+      }, 2200);
+    }
+
+    // --- NAVIGATION ONGLETS ---
+    function switchTab(tabName, updateUrl = true) {
+      currentTab = tabName;
+      if (tabName === 'prompts') {
+        tabBtnGlossary.classList.remove('active');
+        tabBtnPrompts.classList.add('active');
+        glossaryView.classList.remove('active');
+        promptsView.classList.add('active');
+        mainTitle.textContent = "Bibliothèque de Prompts";
+        mainSubtitle.textContent = "Prompts Vibe Coding prêts à copier pour vos sessions de code";
       } else {
-        filtersPanel.classList.add('collapsed');
-        toggleIcon.classList.remove('open');
-        toggleFiltersBtn.setAttribute('aria-expanded', 'false');
+        tabBtnPrompts.classList.remove('active');
+        tabBtnGlossary.classList.add('active');
+        promptsView.classList.remove('active');
+        glossaryView.classList.add('active');
+        mainTitle.textContent = "Le Glossaire Vibe Coding";
+        mainSubtitle.textContent = "57 notions clés et définitions pour le Vibe Coding";
+        isolatedPromptId = null;
+        isolatedBanner.classList.remove('active');
+        promptsFilterSection.style.display = 'flex';
       }
-    });
 
+      if (updateUrl && !isolatedPromptId) {
+        const url = new URL(window.location);
+        url.searchParams.set('tab', tabName);
+        url.searchParams.delete('prompt');
+        history.replaceState(null, '', url.toString());
+      }
+    }
+
+    tabBtnGlossary.addEventListener('click', () => switchTab('glossary'));
+    tabBtnPrompts.addEventListener('click', () => switchTab('prompts'));
+
+    // --- RENDU GLOSSAIRE ---
     function matchWordStart(fullText, query) {
       if (!query) return true;
       const q = escapeRegExp(query.trim().toLowerCase());
@@ -603,10 +1023,10 @@
       return regex.test(fullText);
     }
 
-    function render() {
-      const query = searchQuery.trim().toLowerCase();
+    function renderGlossary() {
+      const query = glossaryQuery.trim().toLowerCase();
       
-      const filtered = TERMS_DATA.filter(item => {
+      const filtered = GLOSSARY_DATA.filter(item => {
         const matchMod = (activeModule === 'ALL' || item.module === activeModule);
         const matchCat = (activeCategory === 'ALL' || item.category === activeCategory);
         
@@ -622,18 +1042,18 @@
         return matchMod && matchCat && matchAlpha && matchSearch;
       });
 
-      counterTag.textContent = `${filtered.length} terme${filtered.length > 1 ? 's' : ''}`;
+      glossaryCounterTag.textContent = `${filtered.length} terme${filtered.length > 1 ? 's' : ''}`;
 
       if (filtered.length === 0) {
-        cardsContainer.style.display = 'none';
-        emptyState.style.display = 'block';
+        glossaryCardsContainer.style.display = 'none';
+        glossaryEmptyState.style.display = 'block';
         return;
       }
 
-      cardsContainer.style.display = 'flex';
-      emptyState.style.display = 'none';
+      glossaryCardsContainer.style.display = 'flex';
+      glossaryEmptyState.style.display = 'none';
 
-      cardsContainer.innerHTML = filtered.map(item => {
+      glossaryCardsContainer.innerHTML = filtered.map(item => {
         let wordHtml = escapeHtml(item.word);
         let defHtml = escapeHtml(item.definition);
 
@@ -645,7 +1065,7 @@
         }
 
         const refParts = item.ref.split('—');
-        const code = refParts[0] ? (refParts[0].trim ? refParts[0].trim() : refParts[0]) : item.ref;
+        const code = refParts[0] ? refParts[0].trim() : item.ref;
         const title = refParts[1] ? refParts[1].trim() : '';
 
         return `
@@ -664,26 +1084,215 @@
       }).join('');
     }
 
-    function escapeRegExp(string) {
-      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // --- RENDU BIBLIOTHÈQUE DE PROMPTS ---
+    function renderPrompts() {
+      const query = promptsQuery.trim().toLowerCase();
+
+      // Cas Vue Isolée par URL
+      if (isolatedPromptId) {
+        const singlePrompt = PROMPTS_DATA.find(p => p.id === isolatedPromptId);
+        if (singlePrompt) {
+          promptsFilterSection.style.display = 'none';
+          isolatedBanner.classList.add('active');
+          promptsCounterTag.textContent = '1 prompt isolé';
+          promptsCardsContainer.style.display = 'flex';
+          promptsEmptyState.style.display = 'none';
+
+          promptsCardsContainer.innerHTML = renderSinglePromptCard(singlePrompt, true);
+          return;
+        }
+      }
+
+      promptsFilterSection.style.display = 'flex';
+      isolatedBanner.classList.remove('active');
+
+      const filtered = PROMPTS_DATA.filter(item => {
+        const matchTag = (activePromptTag === 'ALL' || item.tags.includes(activePromptTag));
+        
+        const fullText = (item.title + ' ' + item.description + ' ' + item.prompt + ' ' + item.tags.join(' ')).toLowerCase();
+        const matchSearch = (query === '' || fullText.includes(query));
+
+        return matchTag && matchSearch;
+      });
+
+      promptsCounterTag.textContent = `${filtered.length} prompt${filtered.length > 1 ? 's' : ''}`;
+
+      if (filtered.length === 0) {
+        promptsCardsContainer.style.display = 'none';
+        promptsEmptyState.style.display = 'block';
+        return;
+      }
+
+      promptsCardsContainer.style.display = 'flex';
+      promptsEmptyState.style.display = 'none';
+
+      promptsCardsContainer.innerHTML = filtered.map(item => renderSinglePromptCard(item, false, query)).join('');
     }
 
-    function escapeHtml(str) {
-      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    function renderSinglePromptCard(item, isIsolated = false, query = '') {
+      let titleHtml = escapeHtml(item.title);
+      let descHtml = escapeHtml(item.description);
+      let promptHtml = escapeHtml(item.prompt);
+
+      if (query !== '') {
+        const qEscaped = escapeRegExp(query);
+        const regex = new RegExp(`(${qEscaped})`, 'gi');
+        titleHtml = titleHtml.replace(regex, '<mark>$1</mark>');
+        descHtml = descHtml.replace(regex, '<mark>$1</mark>');
+        promptHtml = promptHtml.replace(regex, '<mark>$1</mark>');
+      }
+
+      const tagsHtml = item.tags.map(t => {
+        const isEx = (t === 'Exemple');
+        return `<span class="prompt-tag-badge ${isEx ? 'badge-example' : ''}" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</span>`;
+      }).join('');
+
+      return `
+        <div class="prompt-card" id="prompt-${item.id}">
+          <div class="prompt-header">
+            <div class="prompt-title">${titleHtml}</div>
+            <div class="prompt-tags">${tagsHtml}</div>
+          </div>
+          <div class="prompt-desc">${descHtml}</div>
+          <div class="prompt-box-wrapper">
+            <pre class="prompt-text-block" id="text-${item.id}"><code>${promptHtml}</code></pre>
+          </div>
+          <div class="prompt-actions">
+            <button class="btn-copy-prompt" onclick="copyPromptText('${item.id}', this)">
+              <span>📋 Copier le prompt</span>
+            </button>
+            <button class="btn-share-prompt" onclick="sharePrompt('${item.id}', this)">
+              <span>🔗 Partager ce prompt</span>
+            </button>
+          </div>
+        </div>
+      `;
     }
 
-    searchInput.addEventListener('input', (e) => {
-      searchQuery = e.target.value;
-      clearBtn.style.display = searchQuery ? 'flex' : 'none';
-      render();
+    // --- ACTIONS PROMPT : COPIER ET PARTAGER ---
+    function copyPromptText(promptId, btn) {
+      const item = PROMPTS_DATA.find(p => p.id === promptId);
+      if (!item) return;
+
+      navigator.clipboard.writeText(item.prompt).then(() => {
+        btn.classList.add('copied');
+        btn.innerHTML = '<span>✅ Copié dans le presse-papier !</span>';
+        showToast('Prompt copié avec succès !');
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = '<span>📋 Copier le prompt</span>';
+        }, 2500);
+      }).catch(() => {
+        showToast('Erreur lors de la copie');
+      });
+    }
+
+    function sharePrompt(promptId, btn) {
+      const shareUrl = `${window.location.origin}${window.location.pathname}?prompt=${encodeURIComponent(promptId)}`;
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        btn.classList.add('copied');
+        btn.innerHTML = '<span>🔗 Lien copié !</span>';
+        showToast('Lien isolé copié dans le presse-papier !');
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = '<span>🔗 Partager ce prompt</span>';
+        }, 2500);
+      }).catch(() => {
+        showToast('Erreur lors de la copie du lien');
+      });
+    }
+
+    btnBackAll.addEventListener('click', () => {
+      isolatedPromptId = null;
+      const url = new URL(window.location);
+      url.searchParams.delete('prompt');
+      url.searchParams.set('tab', 'prompts');
+      history.replaceState(null, '', url.toString());
+      renderPrompts();
     });
 
-    clearBtn.addEventListener('click', () => {
-      searchInput.value = '';
-      searchQuery = '';
-      clearBtn.style.display = 'none';
-      searchInput.focus();
-      render();
+    // Clic sur un tag de carte pour filtrer
+    promptsCardsContainer.addEventListener('click', (e) => {
+      const tagBadge = e.target.closest('.prompt-tag-badge');
+      if (!tagBadge) return;
+      const tag = tagBadge.getAttribute('data-tag');
+      if (!tag) return;
+      
+      activePromptTag = tag;
+      document.querySelectorAll('#promptTagPills .pill-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-tag') === tag);
+      });
+      renderPrompts();
+    });
+
+    // Filtres tags Prompts
+    promptTagPills.addEventListener('click', (e) => {
+      const btn = e.target.closest('.pill-btn');
+      if (!btn) return;
+      document.querySelectorAll('#promptTagPills .pill-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activePromptTag = btn.getAttribute('data-tag');
+      renderPrompts();
+    });
+
+    // Recherche Prompts
+    promptsSearchInput.addEventListener('input', (e) => {
+      promptsQuery = e.target.value;
+      promptsClearBtn.style.display = promptsQuery ? 'flex' : 'none';
+      renderPrompts();
+    });
+
+    promptsClearBtn.addEventListener('click', () => {
+      promptsSearchInput.value = '';
+      promptsQuery = '';
+      promptsClearBtn.style.display = 'none';
+      promptsSearchInput.focus();
+      renderPrompts();
+    });
+
+    promptsResetBtn.addEventListener('click', () => {
+      promptsQuery = '';
+      promptsSearchInput.value = '';
+      promptsClearBtn.style.display = 'none';
+      activePromptTag = 'ALL';
+      isolatedPromptId = null;
+      document.querySelectorAll('#promptTagPills .pill-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('#promptTagPills .pill-btn[data-tag="ALL"]').classList.add('active');
+      
+      const url = new URL(window.location);
+      url.searchParams.delete('prompt');
+      url.searchParams.set('tab', 'prompts');
+      history.replaceState(null, '', url.toString());
+      
+      renderPrompts();
+    });
+
+    // --- RECHERCHE ET FILTRES GLOSSAIRE ---
+    toggleGlossaryFiltersBtn.addEventListener('click', () => {
+      const isCollapsed = glossaryFiltersPanel.classList.contains('collapsed');
+      if (isCollapsed) {
+        glossaryFiltersPanel.classList.remove('collapsed');
+        toggleGlossaryIcon.classList.add('open');
+        toggleGlossaryFiltersBtn.setAttribute('aria-expanded', 'true');
+      } else {
+        glossaryFiltersPanel.classList.add('collapsed');
+        toggleGlossaryIcon.classList.remove('open');
+        toggleGlossaryFiltersBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    glossarySearchInput.addEventListener('input', (e) => {
+      glossaryQuery = e.target.value;
+      glossaryClearBtn.style.display = glossaryQuery ? 'flex' : 'none';
+      renderGlossary();
+    });
+
+    glossaryClearBtn.addEventListener('click', () => {
+      glossarySearchInput.value = '';
+      glossaryQuery = '';
+      glossaryClearBtn.style.display = 'none';
+      glossarySearchInput.focus();
+      renderGlossary();
     });
 
     document.getElementById('alphaBar').addEventListener('click', (e) => {
@@ -692,7 +1301,7 @@
       document.querySelectorAll('.alpha-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       activeLetter = btn.getAttribute('data-letter');
-      render();
+      renderGlossary();
     });
 
     document.getElementById('modulePills').addEventListener('click', (e) => {
@@ -701,7 +1310,7 @@
       document.querySelectorAll('#modulePills .pill-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       activeModule = btn.getAttribute('data-module');
-      render();
+      renderGlossary();
     });
 
     document.getElementById('categoryPills').addEventListener('click', (e) => {
@@ -710,26 +1319,54 @@
       document.querySelectorAll('#categoryPills .pill-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       activeCategory = btn.getAttribute('data-cat');
-      render();
+      renderGlossary();
     });
 
-    resetBtn.addEventListener('click', () => {
-      searchQuery = '';
-      searchInput.value = '';
-      clearBtn.style.display = 'none';
+    glossaryResetBtn.addEventListener('click', () => {
+      glossaryQuery = '';
+      glossarySearchInput.value = '';
+      glossaryClearBtn.style.display = 'none';
       activeModule = 'ALL';
       activeCategory = 'ALL';
       activeLetter = 'ALL';
       
-      document.querySelectorAll('.pill-btn, .alpha-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#glossaryView .pill-btn, #glossaryView .alpha-btn').forEach(b => b.classList.remove('active'));
       document.querySelector('#modulePills .pill-btn[data-module="ALL"]').classList.add('active');
       document.querySelector('#categoryPills .pill-btn[data-cat="ALL"]').classList.add('active');
       document.querySelector('#alphaBar .alpha-btn[data-letter="ALL"]').classList.add('active');
       
-      render();
+      renderGlossary();
     });
 
-    render();
+    // Utilitaires
+    function escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // --- INITIALISATION AU CHARGEMENT (Gestion de l'URL) ---
+    function init() {
+      const params = new URLSearchParams(window.location.search);
+      const promptParam = params.get('prompt');
+      const tabParam = params.get('tab');
+
+      if (promptParam) {
+        isolatedPromptId = promptParam;
+        switchTab('prompts', false);
+      } else if (tabParam === 'prompts') {
+        switchTab('prompts', false);
+      } else {
+        switchTab('glossary', false);
+      }
+
+      renderGlossary();
+      renderPrompts();
+    }
+
+    init();
   </script>
 
 </body>
