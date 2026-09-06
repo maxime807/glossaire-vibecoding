@@ -157,6 +157,7 @@ html_content = f"""<!DOCTYPE html>
       --color-bg-light: #F8FAFC;
       --color-card-bg: #FFFFFF;
       --color-border: #E2E8F0;
+      --color-border-dark: #CBD5E1;
       --color-text-dark: #18093B;
       --color-text-muted: #64748B;
       --font-main: 'Basic Sans Alt', 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
@@ -594,21 +595,23 @@ html_content = f"""<!DOCTYPE html>
       font-weight: 600;
     }}
 
-    /* Cards - Prompts Library */
+    /* Cards - Prompts Library (Bordures subtiles & fond gris très clair) */
     .prompt-card {{
       background: var(--color-card-bg);
-      border: 2px solid var(--color-brand-fig);
-      box-shadow: 4px 4px 0px var(--color-brand-fig);
-      padding: 1.25rem 1.4rem;
+      border: 1px solid var(--color-border);
+      border-left: 4px solid var(--color-brand-purple);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      padding: 1.2rem 1.35rem;
       display: flex;
       flex-direction: column;
       gap: 0.85rem;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
     }}
 
     .prompt-card:hover {{
       transform: translateY(-2px);
-      box-shadow: 6px 6px 0px var(--color-brand-purple);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+      border-color: var(--color-brand-fig);
     }}
 
     .prompt-header {{
@@ -620,8 +623,8 @@ html_content = f"""<!DOCTYPE html>
     }}
 
     .prompt-title {{
-      font-size: 1.22rem;
-      font-weight: 900;
+      font-size: 1.18rem;
+      font-weight: 800;
       color: var(--color-brand-fig);
       letter-spacing: -0.01em;
       line-height: 1.3;
@@ -643,38 +646,39 @@ html_content = f"""<!DOCTYPE html>
     .prompt-tag-badge {{
       background: #F1F5F9;
       color: var(--color-brand-fig);
-      border: 1px solid var(--color-brand-fig);
+      border: 1px solid var(--color-border-dark);
       font-size: 0.72rem;
       font-weight: 800;
       padding: 0.15rem 0.5rem;
       text-transform: uppercase;
       cursor: pointer;
-      transition: background 0.15s ease;
+      transition: background 0.15s ease, border-color 0.15s ease;
     }}
 
     .prompt-tag-badge:hover {{
-      background: var(--color-pink-20);
+      background: #E2E8F0;
+      border-color: var(--color-brand-fig);
     }}
 
     .prompt-tag-badge.badge-example {{
       background: #ffe4e6;
       color: #be123c;
-      border-color: #be123c;
+      border-color: #fda4af;
     }}
 
-    /* Zone de texte du prompt avec police Cousine */
+    /* Zone de texte du prompt : FOND GRIS TRÈS CLAIR (pas rose) & Police Cousine */
     .prompt-box-wrapper {{
       position: relative;
     }}
 
     .prompt-text-block {{
       font-family: var(--font-code);
-      font-size: 0.95rem;
+      font-size: 0.93rem;
       line-height: 1.55;
-      background: #FCF1F0;
-      border: 2px solid var(--color-brand-fig);
+      background: #F8FAFC; /* Gris très clair neutre */
+      border: 1px solid var(--color-border);
       color: #18093B;
-      padding: 1rem 1.1rem;
+      padding: 0.95rem 1.1rem;
       white-space: pre-wrap;
       word-break: break-word;
       user-select: text;
@@ -690,17 +694,16 @@ html_content = f"""<!DOCTYPE html>
     .btn-copy-prompt {{
       background: var(--color-brand-fig);
       color: var(--color-brand-sunny);
-      border: 2px solid var(--color-brand-fig);
-      padding: 0.55rem 1rem;
+      border: 1px solid var(--color-brand-fig);
+      padding: 0.5rem 0.95rem;
       font-family: var(--font-main);
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 800;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
       text-transform: uppercase;
-      box-shadow: 2px 2px 0px var(--color-brand-purple);
       transition: all 0.15s ease;
     }}
 
@@ -713,76 +716,65 @@ html_content = f"""<!DOCTYPE html>
       background: #15803d;
       color: #FFFFFF;
       border-color: #15803d;
-      box-shadow: none;
     }}
 
     .btn-share-prompt {{
       background: #FFFFFF;
       color: var(--color-brand-fig);
-      border: 2px solid var(--color-brand-fig);
-      padding: 0.55rem 0.9rem;
+      border: 1px solid var(--color-border-dark);
+      padding: 0.5rem 0.85rem;
       font-family: var(--font-main);
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
       text-transform: uppercase;
-      transition: background 0.15s ease;
+      transition: background 0.15s ease, border-color 0.15s ease;
     }}
 
     .btn-share-prompt:hover {{
       background: #F1F5F9;
+      border-color: var(--color-brand-fig);
     }}
 
     .btn-share-prompt.copied {{
       background: #dcfce7;
       color: #166534;
-      border-color: #166534;
+      border-color: #86efac;
     }}
 
-    /* Bannière Vue Isolée (quand l'URL cible un prompt unique) */
-    .isolated-banner {{
-      background: var(--color-brand-sunny);
-      border: 3px solid var(--color-brand-fig);
-      box-shadow: 4px 4px 0px var(--color-brand-fig);
-      padding: 1rem 1.25rem;
-      margin-bottom: 1.5rem;
+    /* Navigation Mode Isolé : Simple bouton de retour (plus de bandeau jaune) */
+    .isolated-nav {{
       display: none;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      flex-wrap: wrap;
+      margin-bottom: 1rem;
     }}
 
-    .isolated-banner.active {{
-      display: flex;
-    }}
-
-    .isolated-info {{
-      font-weight: 800;
-      font-size: 0.95rem;
-      color: var(--color-brand-fig);
+    .isolated-nav.active {{
       display: flex;
       align-items: center;
-      gap: 0.5rem;
     }}
 
     .btn-back-all {{
-      background: var(--color-brand-fig);
-      color: #FFFFFF;
-      border: 2px solid var(--color-brand-fig);
-      padding: 0.5rem 1rem;
+      background: #FFFFFF;
+      color: var(--color-brand-fig);
+      border: 1px solid var(--color-border-dark);
+      padding: 0.55rem 1rem;
       font-family: var(--font-main);
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       font-weight: 800;
       cursor: pointer;
-      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: background 0.15s ease, border-color 0.15s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }}
 
     .btn-back-all:hover {{
-      background: var(--color-brand-purple);
+      background: #F1F5F9;
+      border-color: var(--color-brand-fig);
     }}
 
     /* Surlignage de recherche */
@@ -859,7 +851,7 @@ html_content = f"""<!DOCTYPE html>
     <header>
       <div class="header-top">
         <span class="brand-badge">Formation Vibe Coding</span>
-        <span style="font-weight: 800; font-size: 0.85rem;">Espace Apprenant</span>
+        <span style="font-weight: 800; font-size: 0.85rem;">Espace Apprenant • v2.1</span>
       </div>
       <h1 id="mainTitle">Le Glossaire Vibe Coding</h1>
       <div class="header-desc" id="mainSubtitle">57 notions clés et boîte à outils pour le Vibe Coding</div>
@@ -877,12 +869,9 @@ html_content = f"""<!DOCTYPE html>
       </button>
     </nav>
 
-    <!-- Bannière Mode Isolé (Partage direct d'un prompt par URL) -->
-    <div class="isolated-banner" id="isolatedBanner">
-      <div class="isolated-info">
-        <span>🎯 Affichage d'un prompt partagé</span>
-      </div>
-      <button class="btn-back-all" id="btnBackAll">← Voir tous les prompts ({len(prompts_data)})</button>
+    <!-- Navigation retour Mode Isolé (Simple bouton, plus de carte jaune) -->
+    <div class="isolated-nav" id="isolatedNav">
+      <button class="btn-back-all" id="btnBackAll">← Retour à tous les prompts ({len(prompts_data)})</button>
     </div>
 
     <!-- ============================================== -->
@@ -1025,7 +1014,7 @@ html_content += f"""          </div>
     const promptsView = document.getElementById('promptsView');
     const mainTitle = document.getElementById('mainTitle');
     const mainSubtitle = document.getElementById('mainSubtitle');
-    const isolatedBanner = document.getElementById('isolatedBanner');
+    const isolatedNav = document.getElementById('isolatedNav');
     const btnBackAll = document.getElementById('btnBackAll');
     const toastMsg = document.getElementById('toastMsg');
 
@@ -1077,7 +1066,7 @@ html_content += f"""          </div>
         mainTitle.textContent = "Le Glossaire Vibe Coding";
         mainSubtitle.textContent = "57 notions clés et définitions pour le Vibe Coding";
         isolatedPromptId = null;
-        isolatedBanner.classList.remove('active');
+        isolatedNav.classList.remove('active');
         promptsFilterSection.style.display = 'flex';
       }}
 
@@ -1170,7 +1159,7 @@ html_content += f"""          </div>
         const singlePrompt = PROMPTS_DATA.find(p => p.id === isolatedPromptId);
         if (singlePrompt) {{
           promptsFilterSection.style.display = 'none';
-          isolatedBanner.classList.add('active');
+          isolatedNav.classList.add('active');
           promptsCounterTag.textContent = '1 prompt isolé';
           promptsCardsContainer.style.display = 'flex';
           promptsEmptyState.style.display = 'none';
@@ -1181,7 +1170,7 @@ html_content += f"""          </div>
       }}
 
       promptsFilterSection.style.display = 'flex';
-      isolatedBanner.classList.remove('active');
+      isolatedNav.classList.remove('active');
 
       const filtered = PROMPTS_DATA.filter(item => {{
         const matchTag = (activePromptTag === 'ALL' || item.tags.includes(activePromptTag));
@@ -1465,7 +1454,6 @@ if os.path.exists(SCRATCH_EXPORT_DIR):
 
 if os.path.exists(SCRIPTS_DIR):
     with open(os.path.join(SCRIPTS_DIR, 'build_interactive_web_glossary.py'), 'w', encoding='utf-8') as f:
-        # Save script version in scripts dir as well
-        pass
+        f.write(html_content)
 
-print("Application interactive Glossaire + Bibliothèque de Prompts générée avec succès.")
+print("Application interactive mise à jour avec succès (bordures subtiles, fond gris très clair, bouton retour isolé direct).")
